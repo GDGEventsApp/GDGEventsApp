@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.gdgevents.gdgeventsapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.gdgevents.gdgeventsapp"
