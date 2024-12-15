@@ -1,6 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+
+    // Added plugins
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.protobuf)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -40,7 +47,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
     packaging {
         resources {
@@ -66,4 +73,94 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Hilt - dependency injection
+    implementation(libs.hilt.android)
+    // hilt kapt - annotation processor — hilt ksp is in alpha
+    kapt(libs.hilt.compiler)
+
+    // Retrofit - make type safe requests
+    implementation(libs.retrofit)
+    // okhttp - fire http calls
+    implementation(libs.okhttp)
+    // logging interceptor - log calls for debugging
+    implementation(libs.logging.interceptor)
+    // converter - make retrofit use serialization json
+    implementation(libs.converter.kotlinx.serialization)
+    // JSON - serialize Kotlin objects <-> JSON
+    implementation(libs.kotlinx.serialization.json)
+
+    // Coil - asynchronous image loading
+    implementation(libs.coil.compose)
+
+    // datastore - make type safe local storage
+    implementation(libs.androidx.datastore)
+    // protobuf - serialize Kotlin objects <-> protobuf schema
+    implementation(libs.protobuf.kotlin.lite)
+
+    // room - local database
+    implementation(libs.androidx.room.runtime)
+    // room ksp - annotation processor
+    ksp(libs.androidx.room.compiler)
+    // room - coroutine support
+    implementation(libs.androidx.room.ktx)
+
+    // mockk unit tests
+    testImplementation(libs.mockk.android)
+    // mockk instrumented tests
+    androidTestImplementation(libs.mockk.android)
+    // kotlin coroutines tests
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // collect as state with lifecycle
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // adaptive navigation - get window info
+    implementation(libs.androidx.adaptive.navigation.android)
+    // navigation suite scaffold - make adaptive navigation
+    implementation(libs.androidx.material3.adaptive.navigation.suite)
+
+    // compose nav host & type safe navigation
+    implementation(libs.androidx.navigation.compose)
+    // hilt view model injection
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // splash screen - backwards compatibility
+    implementation(libs.androidx.core.splashscreen)
+
+    // work manager
+    implementation(libs.androidx.work.runtime.ktx)
+    // hilt work manager injection
+    implementation(libs.androidx.hilt.work)
+    // hilt kapt work manager
+    kapt(libs.androidx.hilt.compiler)
+}
+
+// protobuf plugin
+protobuf {
+    // proto compiler
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    // plugin instructions
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                // make java files
+                register("java") {
+                    option("lite")
+                }
+                // make kotlin DSL on top of java files
+                register("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
+// kapt plugin
+kapt {
+    // improve type inference accuracy
+    correctErrorTypes = true
 }
