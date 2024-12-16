@@ -72,13 +72,15 @@ val AppTypography = Typography(
         lineHeight = 16.sp
     ),
     // Fields
-    displaySmall = TextStyle( // Placeholder
+    // Placeholder
+    displaySmall = TextStyle(
         fontFamily = ProductSans,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp
     ),
-    displayLarge = TextStyle( // Title & Description
+    // Title & Description
+    displayMedium = TextStyle(
         fontFamily = ProductSans,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
