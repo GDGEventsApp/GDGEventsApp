@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 abstract class WorkModule {
 
     @Binds
-    abstract fun bindsEventRepo(
+    abstract fun bindsSyncManager(
         syncManagerImpl: SyncManagerImpl
     ): SyncManager
 
