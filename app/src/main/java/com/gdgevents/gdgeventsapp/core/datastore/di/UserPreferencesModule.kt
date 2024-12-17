@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 abstract class UserPreferencesRepoModule {
 
     @Binds
-    abstract fun bindsMapRepo(
+    abstract fun bindsUserPreferencesRepo(
         userPreferencesRepoImpl: UserPreferencesRepoImpl
     ): UserPreferencesRepo
 

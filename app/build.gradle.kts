@@ -128,13 +128,6 @@ dependencies {
 
     // splash screen - backwards compatibility
     implementation(libs.androidx.core.splashscreen)
-
-    // work manager
-    implementation(libs.androidx.work.runtime.ktx)
-    // hilt work manager injection
-    implementation(libs.androidx.hilt.work)
-    // hilt kapt work manager
-    kapt(libs.androidx.hilt.compiler)
 }
 
 // protobuf plugin
