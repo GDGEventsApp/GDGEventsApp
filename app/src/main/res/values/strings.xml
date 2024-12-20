@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GDGEventsApp</string>
+    <string name="Map_Api_key">AIzaSyCLzDsqjcZ6gcm7riPHj82vURPk23BQW-4</string>
+
 </resources>
