@@ -1,11 +1,6 @@
 package com.gdgevents.gdgeventsapp
 
-import ahmed.praicticing.compose_practice.permissionManager
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,6 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
@@ -44,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 private lateinit var PermissionManager: permissionManager
 private lateinit var defaultCameraPosition: CameraPosition
