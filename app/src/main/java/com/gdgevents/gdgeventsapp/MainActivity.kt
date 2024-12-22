@@ -1,6 +1,9 @@
 package com.gdgevents.gdgeventsapp
 
+import ahmed.praicticing.compose_practice.permissionManager
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,7 +43,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 private lateinit var PermissionManager: permissionManager
 private lateinit var defaultCameraPosition: CameraPosition
@@ -49,7 +51,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        PermissionManager = (application as MyApplication).permissions
+        PermissionManager = (application as GdgApp).permissions
 
         val PermissionManager = permissionManager(this)
         setContent {
