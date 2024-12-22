@@ -6,5 +6,5 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnBoardingViewModel @Inject constructor() : ViewModel() {
-    // add implementation
+
 }
