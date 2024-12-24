@@ -43,13 +43,13 @@ class permissionManager(private val context: Context) {
             hasLocationAccess = hasAccess(listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)),
         )
     )
-    private fun hasAccess(permission: String): Boolean {
+     fun hasAccess(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             context,
             permission
         ) == PackageManager.PERMISSION_GRANTED
     }
-    private fun hasAccess(permissions: List<String>): Boolean {
+     fun hasAccess(permissions: List<String>): Boolean {
         return permissions.all(::hasAccess)
     }
 
@@ -67,8 +67,7 @@ class permissionManager(private val context: Context) {
     suspend fun checkPermissions() {
         val newState = State(
 
-            hasLocationAccess = hasAccess(ACCESS_FINE_LOCATION) && hasAccess(ACCESS_COARSE_LOCATION)
-        )
+            hasLocationAccess = hasAccess(ACCESS_FINE_LOCATION) && hasAccess(ACCESS_COARSE_LOCATION))
 
         _state.emit(newState)
     }

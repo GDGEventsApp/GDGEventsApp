@@ -24,40 +24,43 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.size
 
 import androidx.compose.material.icons.Icons
 
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.gdgevents.gdgeventsapp.MainActivity
-import com.gdgevents.gdgeventsapp.Screens
+
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermissionScreen(
     navController: NavHostController,
-    viewModel: PermissionViewModel = viewModel(factory = PermissionViewModelFactory())
+    viewModel: PermissionViewModel = viewModel(factory = PermissionViewModelFactory()),
+    LocRepo: LocationRepo = LocationRepo(LocalContext.current as MainActivity)
 ) {
 
     val state = viewModel.uiState.collectAsState()
@@ -104,30 +107,59 @@ fun PermissionScreen(
             Divider()
             Spacer(Modifier.height(32.dp))
             if (state.value.hasAllAccess) {
-                FilledTonalButton(onClick = { navController.navigate(Screens.MapScreen.route) }) {
-                    Text("Get started")
-                }
-            } else {
-                if (hasRequestedPermissions) {
-                    FilledTonalButton(onClick = { openSettings() }) {
-                        Text("Go to settings")
-                    }
-                } else {
-                    FilledTonalButton(onClick = {
-                        if (Build.VERSION.SDK_INT >= 33) {
-                            requestPermissions.launch(REQUIRED_PERMISSIONS_POST_T)
+            val coroutineScope = rememberCoroutineScope()
+var selectedLocation: LatLng?
+                var isLoading by remember { mutableStateOf(false) }
+                    FilledTonalButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                LocRepo.fetchLocation()
+                                delay(4000)
+                                selectedLocation = LocRepo.fetchLocation()
+                                isLoading = false
+                                Log.d("Selected Location", "PermissionScreen: $selectedLocation")
+                                navController.navigate(Screens.MapScreen.createRoute(selectedLocation?.latitude!!.toDouble(),selectedLocation?.longitude!!.toDouble())){
+
+                                }
+
+
+                            }
+                    }) {
+                        if(isLoading){
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp)
                         }
                         else {
-                            requestPermissions.launch(REQUIRED_PERMISSIONS_PRE_T)
+                            Text("Get started")
+
                         }
-                    }) {
-                        Text("Request permissions")
                     }
-                }
+            } else {
+    if (hasRequestedPermissions) {
+        FilledTonalButton(onClick = { openSettings() }) {
+            Text("Go to settings")
+        }
+    } else {
+        FilledTonalButton(onClick = {
+            if (Build.VERSION.SDK_INT >= 33) {
+                requestPermissions.launch(REQUIRED_PERMISSIONS_POST_T)
+            } else {
+                requestPermissions.launch(REQUIRED_PERMISSIONS_PRE_T)
+            }
+        }) {
+            Text("Request permissions")
+        }
+
+    }
+}
             }
         }
     }
-}
+
 
 @Composable
 fun PermissionAccessIcon(hasAccess: Boolean) {

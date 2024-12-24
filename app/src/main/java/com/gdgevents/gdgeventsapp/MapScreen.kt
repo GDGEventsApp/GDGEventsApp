@@ -19,68 +19,52 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.MotionEvent
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.StrokeStyle
-import com.google.android.gms.maps.model.StyleSpan
+
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerInfoWindowContent
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
-import kotlinx.coroutines.launch
+
 import java.util.Locale
 
 private const val TAG = "MapActivity"
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun MapScreen(location : LatLng) {
     // Camera position and map setup
@@ -98,14 +82,20 @@ Log.d("MapsScreen", "MapScreen: $location")
                     .fillMaxWidth()
                     .height(500.dp), // Height of the map
                 cameraPositionState = cameraPositionState,
+
                 onMapLoaded = {
                     // Map loaded callback
                     Log.d(TAG, "Map Loaded")
+                    cameraPositionState.position = CameraPosition.fromLatLngZoom(location, 17f)
+
                 },
 
 
                 onLocationSelected = { location ->
-
+                    // Callback when a location is selected
+                    selectedLocation = location
+                    Log.d(TAG, "Location selected: $location")
+                    cameraPositionState.position = CameraPosition.fromLatLngZoom(location, 17f)
                 }
             )
             locationText.value = getCityAndCountryFromCoordinates(context = LocalContext.current, latLng = selectedLocation)
@@ -129,7 +119,7 @@ fun CheckBoxDone(modifier: Modifier,selectedLocation: String?) {
         Text(
             text = selectedLocation ?: "No location selected", // Show a default text if no location is selected
             modifier = Modifier.padding(bottom = 16.dp),
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.labelSmall
         )
 
 
@@ -181,8 +171,8 @@ fun GoogleMapViewInColumn(
 ) {
     val gizaState = rememberMarkerState(position = LatLng(29.978428, 31.139099))
 
-    var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-    var mapProperties by remember {
+    val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+    val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
 
@@ -223,7 +213,7 @@ fun MapInColumn(
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colors.background
+        color = MaterialTheme.colorScheme.background
     ) {
         var isMapLoaded by remember { mutableStateOf(false) }
 
@@ -293,11 +283,7 @@ fun MapInColumn(
                         enter = EnterTransition.None,
                         exit = fadeOut()
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
-                        )
+
                     }
                 }
             }
