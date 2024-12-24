@@ -15,75 +15,40 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
-import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.CameraPosition
+
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 
-private lateinit var fusedLocationClient: FusedLocationProviderClient
+@SuppressLint("StaticFieldLeak")
 private lateinit var PermissionManager: permissionManager
-private lateinit var defaultCameraPosition: CameraPosition
+
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         PermissionManager = (application as GdgApp).permissions
-
-        val PermissionManager = permissionManager(this)
         setContent {
-            var selectedLocation by remember { mutableStateOf<LatLng?>(LatLng(22.0, 22.0)) }
-            var locationText by remember { mutableStateOf<String>("") }
-            val cameraPositionState = rememberCameraPositionState()
+
             val navController = rememberNavController()
             val isLoading = remember { mutableStateOf(true) }
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            LaunchedEffect(PermissionManager.hasAllPermissions) {
-                if (PermissionManager.hasAllPermissions) {
-                    // Fetch current location
-                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                        location?.let {
-                            val latLng = LatLng(it.latitude, it.longitude)
-                            selectedLocation = latLng
-                            defaultCameraPosition = CameraPosition.fromLatLngZoom(latLng, 17f)
-                            cameraPositionState.position =
-                                defaultCameraPosition
-                            locationText = getCityAndCountryFromCoordinates(this@MainActivity,latLng)
-
-                        } ?: run {
-                            Log.d("Location", "Location is null.")
-                        }
-                    }
-                } else {
-                    PermissionManager.checkPermissions()
-                }
-            }
-
             GDGEventsAppTheme {
-
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     if (isLoading.value) {
                         LoadingIndicator() // Show loading indicator
@@ -99,12 +64,24 @@ class MainActivity : ComponentActivity() {
                         composable("permissions") {
                             PermissionScreen(navController = navController)
                         }
-                        composable("MapScreen") { selectedLocation?.let { it1 -> MapScreen(it1) } }
-                        Log.d("After MapScreen Composable", "onCreate: $selectedLocation")
-                    }
+                        composable( route = Screens.MapScreen.route,
+                            arguments = listOf(
+                                navArgument("latitude") { type = NavType.StringType },
+                                navArgument("longitude") { type = NavType.StringType }                            )
+                        ){ backStackEntry ->
+                            val latitude = backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull()
+                            val longitude = backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull()
+
+                            if (latitude != null && longitude != null) {
+                                MapScreen(LatLng(latitude, longitude))
+                            } else {
+                                Text("Invalid location coordinates")
+                            }
+                        }
                 }
             }
 
+        }
         }
     }
 
@@ -128,46 +105,13 @@ fun LoadingIndicator() {
         color = Color.Blue
     )
 }
-@SuppressLint("MissingPermission")
-@Composable
-fun FetchLocation(isLoading: MutableState<Boolean>, onLocationFetched: (LatLng?) -> Unit) {
-    val context = LocalContext.current
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
-    LaunchedEffect(Unit) {
-        isLoading.value = true
-        Log.d("IsLoading ", "${isLoading.value}")
-        try {
-            val locationResult = fusedLocationClient.lastLocation
-            onLocationFetched(locationResult.let { LatLng(it.result.latitude, it.result.longitude) })
-        } catch (e: Exception) {
-            Log.d("Location", "Failed to fetch location: ${e.message}")
-            onLocationFetched(null)
-        } finally {
-            isLoading.value = false
-        }
-    }
-}
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GDGEventsAppTheme {
-        Greeting("Android")
-    }
-}
 
 sealed class Screens(val route: String) {
     object Permissions : Screens("permissions")
-    object MapScreen : Screens("MapScreen")
-
+    object MapScreen   : Screens("MapScreen/{latitude}/{longitude}") {
+        fun createRoute(latitude: Double, longitude: Double): String {
+            Log.d("MapScreen", "createRoute: $latitude,$longitude")
+            return "MapScreen/$latitude/$longitude"
+        }
+    }
 }
