@@ -134,8 +134,6 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     // hilt kapt work manager
     kapt(libs.androidx.hilt.compiler)
-    // Jetpack Compose Navigation dependencies
-    implementation("androidx.navigation:navigation-compose:2.8.5")
     //To use the BottomNavigation and BottomNavigationItem
     implementation("androidx.compose.material:material:1.7.6")
 
