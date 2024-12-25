@@ -134,8 +134,7 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     // hilt kapt work manager
     kapt(libs.androidx.hilt.compiler)
-    //To use the BottomNavigation and BottomNavigationItem
-    implementation("androidx.compose.material:material:1.7.6")
+
 
 }
 
