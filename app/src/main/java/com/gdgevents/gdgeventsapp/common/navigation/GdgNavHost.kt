@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.gdgevents.gdgeventsapp.features.event.presentaion.home.addHomeRoute
+import com.gdgevents.gdgeventsapp.features.event.presentaion.home.homeRoute
 
 @Composable
 fun GdgNavHost(
@@ -13,11 +13,12 @@ fun GdgNavHost(
 ) {
     // implement NavHost
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = Destination.HomeScreen.route,
     ) {
         // add NavGraph
-        addHomeRoute(navController)
+        homeRoute(navController)
 
     }
 }

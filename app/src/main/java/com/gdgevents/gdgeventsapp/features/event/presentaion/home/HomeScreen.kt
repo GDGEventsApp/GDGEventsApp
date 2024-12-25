@@ -7,7 +7,6 @@ import androidx.navigation.NavController
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navController: NavController
 ) {
     // add ui
 }
