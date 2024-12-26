@@ -3,7 +3,6 @@ package com.gdgevents.gdgeventsapp.features.onBoarding.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,20 +16,17 @@ import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardList
 
 @Composable
@@ -42,29 +38,19 @@ fun OnBoardItem(
 ) {
 
 
-    BoxWithConstraints(
+    Box(
         modifier = modifier
-            .fillMaxHeight()
+            .fillMaxSize()
     ) {
-        val screenHeight = maxHeight
-        val screenWidth = maxWidth
-        val dynamicPadding = screenHeight * 0.15f // 15% of the screen height for padding
-        val dynamicImageSize = screenWidth * 0.6f // 50% of screen width for image size
-        val dynamicTextPadding = screenHeight * 0.07f
 
         Image(
             painter = painterResource(id = page.imageRes),
             contentDescription = null,
             modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 74.sdp
-                )
-                .fillMaxWidth(0.9f)
-                .aspectRatio(0.7f)
-                .size(dynamicImageSize)
-                .align(Alignment.TopCenter),
+                .align(Alignment.Center)
+                .height(500.sdp)
+                .fillMaxWidth()
+                .padding( bottom = 90.sdp,start = 50.sdp, end = 50.sdp),
         )
         Column(
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -74,7 +60,6 @@ fun OnBoardItem(
                 description = page.description,
                 currentPage = page.id,
                 totalPages = 2,
-                dyanmicPaddind = dynamicTextPadding,
                 onNextClick = { onNextClick() },
                 onSkipClick = { onSkipClick() },
             )
@@ -88,7 +73,6 @@ fun OnboardingTextContainer(
     description: String,
     currentPage: Int,
     totalPages: Int,
-    dyanmicPaddind: Dp,
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -100,7 +84,7 @@ fun OnboardingTextContainer(
                 color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
-            .padding(top = dyanmicPaddind, bottom = dyanmicPaddind, start = 20.dp, end = 20.dp),
+            .padding(top = 50.sdp, bottom = 50.sdp, start = 26.dp, end = 26.dp),
         contentAlignment = Alignment.BottomEnd
 
     ) {
@@ -216,3 +200,6 @@ private fun OnBoardModelPrev1() {
     }
 
 }
+
+
+

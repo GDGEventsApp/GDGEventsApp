@@ -128,6 +128,9 @@ dependencies {
 
     // splash screen - backwards compatibility
     implementation(libs.androidx.core.splashscreen)
+
+    //different screen sizes
+    implementation ("com.github.Kaaveh:sdp-compose:1.1.0")
 }
 
 // protobuf plugin
