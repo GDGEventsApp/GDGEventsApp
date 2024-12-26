@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +29,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardList
@@ -61,7 +59,7 @@ fun OnBoardItem(
                 .padding(
                     start = 16.dp,
                     end = 16.dp,
-                    top = dynamicPadding
+                    top = 74.sdp
                 )
                 .fillMaxWidth(0.9f)
                 .aspectRatio(0.7f)
