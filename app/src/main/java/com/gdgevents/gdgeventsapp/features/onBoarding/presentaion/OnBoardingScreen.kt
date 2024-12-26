@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gdgevents.gdgeventsapp.features.onBoarding.components.OnBoardItem
-import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardModel
+import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardList
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 
 @Composable
@@ -22,7 +22,7 @@ fun OnBoardingScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         OnBoardItem(
-            page = onBoardModel[currentPage],
+            page = onBoardList[currentPage],
             onNextClick = nextButton,
             onSkipClick = skipButton
         )

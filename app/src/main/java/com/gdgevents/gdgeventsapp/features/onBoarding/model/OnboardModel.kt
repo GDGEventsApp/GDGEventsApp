@@ -9,7 +9,7 @@ data class OnBoardModel(
     val description: String
 )
 
-val onBoardModel = listOf(
+val onBoardList = listOf(
     OnBoardModel(
         id = 0,
         title = "To Look Up More Events or Activities Nearby By Map",

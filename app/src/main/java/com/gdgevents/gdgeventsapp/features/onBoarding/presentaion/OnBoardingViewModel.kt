@@ -1,7 +1,7 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.presentaion
 
 import androidx.lifecycle.ViewModel
-import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardModel
+import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,7 @@ class OnBoardingViewModel @Inject constructor() : ViewModel() {
     private val _currentPage = MutableStateFlow(0)
     val currentPage: StateFlow<Int> = _currentPage
 
-    private val totalPages: Int = onBoardModel.size // Total number of pages
+    private val totalPages: Int = onBoardList.size // Total number of pages
 
     fun onNextClick() {
         if (_currentPage.value < totalPages - 1) {
