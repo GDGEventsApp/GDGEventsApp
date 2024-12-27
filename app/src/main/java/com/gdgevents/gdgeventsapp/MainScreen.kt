@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,9 +38,9 @@ fun MainScreen() {
         bottomBar = {
 
             NavigationBar(
-                backgroundColor = Color(0xFFF4F4F4),
-                contentColor = MaterialTheme.colors.onPrimary,
-                elevation = 8.dp,
+                containerColor = colorResource(id = R.color.white_myapp),
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                tonalElevation = 8.dp,
                 modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues()).height(56.dp)
             ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
