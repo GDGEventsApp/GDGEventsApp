@@ -1,8 +1,7 @@
-package com.gdgevents.gdgeventsapp.features.map.presentaion
+package com.gdgevents.gdgeventsapp.features.user.presentaion.favorites
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,20 +10,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.gdgevents.gdgeventsapp.GdgAppState
 
 @Composable
-fun MapScreen(
+fun FavoriteScreen(
     appState: GdgAppState,
-    viewModel: MapViewModel = hiltViewModel(),
+    viewModel: FavoritesViewModel = hiltViewModel(),
 ) {
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            Text("Map Screen")
-            Button(
-                onClick = appState::goToNestedNavHost
-            ) {
-                Text("go To Nested Nav Host")
-            }
+            Text("Favorite Screen")
         }
     }
 }
