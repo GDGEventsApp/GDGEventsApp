@@ -91,10 +91,10 @@ fun MainScreen() {
             startDestination = "home_route",
             Modifier.padding(innerPadding)
         ) {
-            composable(topLevelRoutes[0].route) { PlaceholderScreen(topLevelRoutes[0].name) }
-            composable(topLevelRoutes[1].route) { PlaceholderScreen(topLevelRoutes[1].name) }
-            composable(topLevelRoutes[2].route) { PlaceholderScreen(topLevelRoutes[2].name) }
-            composable(topLevelRoutes[3].route) { PlaceholderScreen(topLevelRoutes[3].name) }
+            composable(topLevelRoutes[0].route) { HomeScreen() }
+            composable(topLevelRoutes[1].route) { MyAgendaScreen() }
+            composable(topLevelRoutes[2].route) { FavoriteScreen() }
+            composable(topLevelRoutes[3].route) { SettingsScreen() }
         }
     }
 }
