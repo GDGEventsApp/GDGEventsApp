@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,7 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
 
-            BottomNavigation(
+            NavigationBar(
                 backgroundColor = Color(0xFFF4F4F4),
                 contentColor = MaterialTheme.colors.onPrimary,
                 elevation = 8.dp,
