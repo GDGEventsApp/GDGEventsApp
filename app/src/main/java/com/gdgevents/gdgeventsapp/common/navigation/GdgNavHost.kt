@@ -15,10 +15,10 @@ fun GdgNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Destination.HomeScreen.route,
+        startDestination = Destination.HomeRoute,
     ) {
         // add NavGraph
-        homeRoute(navController)
+        homeRoute()
 
     }
 }

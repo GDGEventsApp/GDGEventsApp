@@ -6,7 +6,7 @@ import com.gdgevents.gdgeventsapp.common.navigation.Destination
 
 
 fun NavGraphBuilder.homeRoute() {
-    composable(Destination.HomeScreen.route) {
+    composable<Destination.HomeRoute> {
         HomeScreen()
     }
 }
