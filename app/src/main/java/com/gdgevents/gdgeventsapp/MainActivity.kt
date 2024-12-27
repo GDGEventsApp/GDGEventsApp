@@ -50,74 +50,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Composable
-fun MainScreen() {
-    val navController = rememberNavController()
 
-    Scaffold(
-        bottomBar = {
-
-            BottomNavigation(
-                backgroundColor =Color(0xFFF4F4F4),
-                contentColor = MaterialTheme.colors.onPrimary,
-                elevation = 8.dp,
-                modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues()).height(56.dp)
-            ) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                topLevelRoutes.forEach { topLevelRoute ->
-                    val isSelected = currentDestination?.hierarchy?.any {
-                        it.route == topLevelRoute.route
-                    } == true
-                    BottomNavigationItem(
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = if (isSelected) topLevelRoute.selectedIcon else topLevelRoute.unselectedIcon),
-                                contentDescription = topLevelRoute.name,
-                                tint = if (isSelected) Color(0xFF1A73E8) else Color.Gray,
-                                modifier = Modifier.size(20.dp)
-
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = topLevelRoute.name,
-                                style = TextStyle(
-                                    fontFamily = ProductSans,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 10.sp,
-                                    lineHeight = 16.98.sp,
-                                    color = if (isSelected) Color(0xFF1A73E8) else Color.Gray // Primary color for selected
-                                )
-                            )
-                        },
-                        selected = isSelected,
-                        onClick = {
-                            navController.navigate(topLevelRoute.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            }
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "home_route",
-            Modifier.padding(innerPadding)
-        ) {
-            composable(topLevelRoutes[0].route) { PlaceholderScreen(topLevelRoutes[0].name) }
-            composable(topLevelRoutes[1].route) { PlaceholderScreen(topLevelRoutes[1].name) }
-            composable(topLevelRoutes[2].route) { PlaceholderScreen(topLevelRoutes[2].name) }
-            composable(topLevelRoutes[3].route) { PlaceholderScreen(topLevelRoutes[3].name) }
-        }
-    }
-}
 
 @Composable
 fun PlaceholderScreen(tabName: String) {
@@ -131,10 +64,3 @@ fun PlaceholderScreen(tabName: String) {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    GDGEventsAppTheme {
-        MainScreen()
-    }
-}
