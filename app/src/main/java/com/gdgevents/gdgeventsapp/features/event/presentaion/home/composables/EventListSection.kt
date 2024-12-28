@@ -1,6 +1,6 @@
 package com.gdgevents.gdgeventsapp.features.event.presentaion.home.composables
 
-
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,15 +30,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import com.gdgevents.gdgeventsapp.features.event.data.Events
+import com.gdgevents.gdgeventsapp.R
+import com.gdgevents.gdgeventsapp.features.event.data.Event
 
 @Composable
 fun EventListSection(
     title: String,
-    events: List<Events>,
+    events: List<Event>,
     onSeeAllClick: () -> Unit,
 ) {
     Column(
@@ -48,7 +53,7 @@ fun EventListSection(
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Companion.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
@@ -68,17 +73,13 @@ fun EventListSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(events.size) { index ->
-                val event = events[index]
+            items(events) { index ->
                 EventCard(
-                    image = event.image,
-                    title = event.title,
-                    locationIcon = event.locationIcon,
-                    location = event.location,
-                    dateIcon = event.dateIcon,
-                    date = event.date
+                    image = index.image,
+                    title = index.title,
+                    location = index.location,
+                    date = index.date
                 )
-
             }
         }
     }
@@ -86,9 +87,7 @@ fun EventListSection(
 
 @Composable
 fun EventCard(
-    image: Int,
-    locationIcon: Int,
-    dateIcon: Int,
+    @DrawableRes image: Int,
     title: String,
     location: String,
     date: String,
@@ -103,32 +102,31 @@ fun EventCard(
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Companion.Start
+            horizontalAlignment = Alignment.Start
         ) {
             Box {
                 Image(
-                    painterResource(id = image),
+                    painter = painterResource(id = image),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(90.dp),
-                    contentScale = ContentScale.Companion.Crop
+                    contentScale = ContentScale.Crop
                 )
-                Box(
+                IconButton(
+                    onClick = { /* Handle favorite icon click */ },
                     modifier = Modifier
-                        .padding(6.dp)
-                        .size(30.dp)
+                        .padding(8.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .align(Alignment.Companion.TopEnd)
+                        .background(MaterialTheme.colorScheme.background)
+                        .align(Alignment.TopEnd)
+                        .size(32.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .align(Alignment.Companion.Center)
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(4.dp)
                     )
                 }
             }
@@ -137,19 +135,19 @@ fun EventCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 4.dp)
+                    .padding(start = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                Spacer(modifier = Modifier.height(3.dp))
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painterResource(id = locationIcon),
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_location),
                         contentDescription = null,
                         modifier = Modifier.size(15.dp)
                     )
@@ -160,12 +158,11 @@ fun EventCard(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 }
-                Spacer(modifier = Modifier.height(3.dp))
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painterResource(id = dateIcon),
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_calender),
                         contentDescription = null,
                         modifier = Modifier.size(15.dp)
                     )

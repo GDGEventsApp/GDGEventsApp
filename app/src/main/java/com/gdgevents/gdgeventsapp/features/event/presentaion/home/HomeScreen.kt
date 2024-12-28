@@ -4,107 +4,58 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gdgevents.gdgeventsapp.features.event.data.Events
+import com.gdgevents.gdgeventsapp.R
+import com.gdgevents.gdgeventsapp.features.event.data.Event
 import com.gdgevents.gdgeventsapp.features.event.presentaion.home.composables.EventListSection
 import com.gdgevents.gdgeventsapp.features.event.presentaion.home.composables.FeaturedEventsSection
 import com.gdgevents.gdgeventsapp.features.event.presentaion.home.composables.TopBar
-import com.gdgevents.gdgeventsapp.R
 
 @Composable
 fun HomeScreen(
     featuredEvents: List<Int>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = modifier.padding(16.dp)) {
-        item {
+    Scaffold(
+        topBar = {
             TopBar()
+        },
+        content = { paddingValues ->
+            LazyColumn(
+                modifier = modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(paddingValues)
+                    .padding(horizontal = 8.dp)
+            ) {
+                // Featured Events Section
+                item {
+                    FeaturedEventsSection(featuredEvents)
+                }
+
+                // Upcoming Events Section
+                item {
+                    EventListSection(
+                        title = "Upcoming Events",
+                        events = Event.dummyData(),
+                        onSeeAllClick = { /* Handle See All Click */ },
+                    )
+                }
+
+                // Past Events Section
+                item {
+                    EventListSection(
+                        title = "Past Events",
+                        events = Event.dummyData(),
+                        onSeeAllClick = { /* Handle See All Click */ },
+                    )
+                }
+            }
         }
-        item {
-            FeaturedEventsSection(featuredEvents)
-        }
-        item {
-            EventListSection(
-                title = "Upcoming Events",
-                events = listOf(
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                ),
-                onSeeAllClick = { /* Handle see all click */ })
-        }
-        item {
-            EventListSection(
-                title = "Past Events",
-                events = listOf(
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                    Events(
-                        image = R.drawable.ai_image,
-                        title = "Gemma 2 Ai Challenge",
-                        locationIcon = R.drawable.location,
-                        location = "Location",
-                        dateIcon = R.drawable.calender,
-                        date = "28 Nov 2024 - 1 Dec 2024"
-                    ),
-                ),
-                onSeeAllClick = { /* Handle see all click */ })
-        }
-    }
+    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
