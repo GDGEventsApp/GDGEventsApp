@@ -1,15 +1,16 @@
 package com.gdgevents.gdgeventsapp
 
-data class TopLevelRoute<T : Any>(
-    val name: String,
-    val route: T,
+data class TopLevelRoute(
+    val route: AppRoute,
     val selectedIcon: Int,
     val unselectedIcon: Int
 )
 
+
 val topLevelRoutes = listOf(
-    TopLevelRoute("Home", "home_route", selectedIcon = R.drawable.ic_home_selected, unselectedIcon =R.drawable.ic_home_unselected),
-    TopLevelRoute("My agenda", "agenda_route", selectedIcon =R.drawable.ic_agenda_selected,unselectedIcon = R.drawable.ic_agenda_unselected),
-    TopLevelRoute("Favorite", "favorite_route",  selectedIcon =R.drawable.ic_favorite_selected,unselectedIcon =R.drawable.ic_favorite_unselected),
-    TopLevelRoute("Settings", "settings_route", selectedIcon = R.drawable.ic_settings_selected,unselectedIcon =R.drawable.ic_settings_unselected)
+    TopLevelRoute(AppRoute.Home, R.drawable.ic_home_selected, R.drawable.ic_home_unselected),
+    TopLevelRoute(AppRoute.MyAgenda, R.drawable.ic_agenda_selected, R.drawable.ic_agenda_unselected),
+    TopLevelRoute(AppRoute.Favorite, R.drawable.ic_favorite_selected, R.drawable.ic_favorite_unselected),
+    TopLevelRoute(AppRoute.Settings, R.drawable.ic_settings_selected, R.drawable.ic_settings_unselected)
 )
+

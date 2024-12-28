@@ -88,13 +88,13 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home_route",
+            startDestination = AppRoute.Home.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(topLevelRoutes[0].route) { HomeScreen() }
-            composable(topLevelRoutes[1].route) { MyAgendaScreen() }
-            composable(topLevelRoutes[2].route) { FavoriteScreen() }
-            composable(topLevelRoutes[3].route) { SettingsScreen() }
+            composable<AppRoute.Home> { HomeScreen() }
+            composable<AppRoute.MyAgenda> { MyAgendaScreen() }
+            composable<AppRoute.Favorite> { FavoriteScreen() }
+            composable<AppRoute.Settings> { SettingsScreen() }
         }
     }
 }
