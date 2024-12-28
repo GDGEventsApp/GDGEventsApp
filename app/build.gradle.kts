@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gdgevents.gdgeventsapp"
-        minSdk = 24
+        minSdk = 25
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
         versionCode = 1
@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -133,7 +134,6 @@ dependencies {
     implementation (libs.maps.compose)
     implementation(libs.play.services.maps.v1810)
     implementation(libs.kotlinx.coroutines.play.services)
-
 
 }
 
