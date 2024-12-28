@@ -1,10 +1,11 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.model
 
+import androidx.annotation.DrawableRes
 import com.gdgevents.gdgeventsapp.R
 
 data class OnBoardModel(
     val id: Int,
-    val imageRes: Int,
+    @DrawableRes val imageRes: Int,
     val title: String,
     val description: String
 )

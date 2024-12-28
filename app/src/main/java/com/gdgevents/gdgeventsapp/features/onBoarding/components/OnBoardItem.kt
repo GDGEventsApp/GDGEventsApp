@@ -11,7 +11,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gdgevents.gdgeventsapp.features.onBoarding.model.OnBoardModel
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,19 +21,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import com.gdgevents.gdgeventsapp.R
+import com.gdgevents.gdgeventsapp.common.components.GdgButton
 import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardList
+import ir.kaaveh.sdpcompose.sdp
+import kotlinx.coroutines.launch
 
 @Composable
 fun OnBoardItem(
-    page: OnBoardModel,
     modifier: Modifier = Modifier,
-    onSkipClick: () -> Unit = {},
-    onNextClick: () -> Unit = {},
 ) {
 
 
@@ -42,28 +48,49 @@ fun OnBoardItem(
         modifier = modifier
             .fillMaxSize()
     ) {
-
-        Image(
-            painter = painterResource(id = page.imageRes),
-            contentDescription = null,
+        val pagerState = rememberPagerState(pageCount = {onBoardList.size})
+        val scope = rememberCoroutineScope()
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
-                .align(Alignment.Center)
-                .height(500.sdp)
-                .fillMaxWidth()
-                .padding( bottom = 90.sdp,start = 50.sdp, end = 50.sdp),
-        )
-        Column(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
-            OnboardingTextContainer(
-                title = page.title,
-                description = page.description,
-                currentPage = page.id,
-                totalPages = 2,
-                onNextClick = { onNextClick() },
-                onSkipClick = { onSkipClick() },
-            )
+                .fillMaxSize()
+        ) { index ->
+            if (index < onBoardList.size){
+                Image(
+                    painter = painterResource(id = onBoardList[pagerState.currentPage].imageRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .height(500.sdp)
+                        .fillMaxWidth()
+                        .padding( bottom = 90.sdp,start = 50.sdp, end = 50.sdp),
+                )
+
+            } else{
+                GetStartedScreen()
+            }
+
         }
+        if (pagerState.currentPage < pagerState.pageCount){
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                OnboardingTextContainer(
+                    title = onBoardList[pagerState.currentPage].title,
+                    description = onBoardList[pagerState.currentPage].description,
+                    currentPage = onBoardList[pagerState.currentPage].id,
+                    totalPages = pagerState.pageCount,
+                    onNextClick = {
+                        if (pagerState.currentPage < pagerState.pageCount)
+                            scope.launch() {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+
+                    },
+                )
+            }
+        }
+
     }
 }
 
@@ -74,7 +101,6 @@ fun OnboardingTextContainer(
     currentPage: Int,
     totalPages: Int,
     onNextClick: () -> Unit,
-    onSkipClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -119,14 +145,15 @@ fun OnboardingTextContainer(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     repeat(totalPages) { index ->
-                        val color = if (index == currentPage)
+                        val currentPage = currentPage == index
+                        val color = if (currentPage)
                             MaterialTheme.colorScheme.onPrimary
                         else MaterialTheme.colorScheme.secondary
                         Spacer(modifier = modifier.width(4.dp))
                         Box(
                             modifier = modifier
                                 .height(8.dp)
-                                .width(if (index == currentPage) 33.dp else 8.dp)
+                                .width(if (currentPage) 33.dp else 8.dp)
                                 .background(color, CircleShape)
                                 .padding(horizontal = 4.dp),
                         )
@@ -145,33 +172,69 @@ fun OnboardingTextContainer(
     }
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_6
-)
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_3A
-)
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_2
-)
+
+@Composable
+fun GetStartedScreen(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.sdp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+
+            buildAnnotatedString {
+                append("Welcome to \n")
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                    append("GDG Events ")
+                }
+                append("app ")
+            },
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Discover GDG events around you",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+        )
+        Image(
+            painter = painterResource(id = R.drawable.onboarding_pic_3),
+            contentDescription = null,
+            modifier = modifier
+                .width(397.dp)
+                .height(356.dp)
+                .padding(bottom = 24.dp, top = 16.dp),
+        )
+        GdgButton(
+            text = "Get Started", onClick = {
+                // TODO: Navigate to another screen ( confirm location)
+            },
+        )
+    }
+}
+
 @Preview(
     showBackground = true,
     showSystemUi = true,
     device = Devices.PIXEL_3A
 )
 @Composable
-private fun OnBoardModelPrev() {
+private fun GetStartedScreenPreview() {
     GDGEventsAppTheme {
-        OnBoardItem(onBoardList[0])
+        GetStartedScreen()
     }
-
 }
+
+
 
 @Preview(
     showBackground = true,
@@ -196,7 +259,7 @@ private fun OnBoardModelPrev() {
 @Composable
 private fun OnBoardModelPrev1() {
     GDGEventsAppTheme {
-        OnBoardItem(onBoardList[1])
+        OnBoardItem()
     }
 
 }
