@@ -2,8 +2,8 @@ package com.gdgevents.gdgeventsapp.features.map.di
 
 import android.content.Context
 import androidx.room.Room
-import com.gdgevents.gdgeventsapp.features.map.data.DB.AppDatabase
-import com.gdgevents.gdgeventsapp.features.map.data.DB.LocationDao
+import com.gdgevents.gdgeventsapp.features.map.data.db.AppDatabase
+import com.gdgevents.gdgeventsapp.features.map.data.db.LocationDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -8,8 +8,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gdgevents.gdgeventsapp.features.map.data.DB.LocationDao
-import com.gdgevents.gdgeventsapp.features.map.data.DB.LocationEntity
+import com.gdgevents.gdgeventsapp.features.map.data.db.LocationDao
+import com.gdgevents.gdgeventsapp.features.map.data.db.LocationEntity
 import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng

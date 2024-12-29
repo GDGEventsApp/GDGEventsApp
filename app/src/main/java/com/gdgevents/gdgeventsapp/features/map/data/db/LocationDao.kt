@@ -1,4 +1,4 @@
-package com.gdgevents.gdgeventsapp.features.map.data.DB
+package com.gdgevents.gdgeventsapp.features.map.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
