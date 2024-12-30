@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">GDGEventsApp</string>
     <string name="Map_Api_key">AIzaSyCLzDsqjcZ6gcm7riPHj82vURPk23BQW-4</string>
+    <string name="disables_gps_dialog_title">Enable GPS</string>
+    <string name="disabled_gps_dialog_description">GPS is required for this app. Please enable GPS.</string>
+    <string name="ok">ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_location_null">failed to get Location</string>
+    <string name="search_hint">Search your location</string>
+    <string name="confirm">Confirm</string>
 
 </resources>

@@ -1,54 +1,88 @@
 package com.gdgevents.gdgeventsapp.features.map.presentaion
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationManager
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.gdgevents.gdgeventsapp.R
+import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
 
+private const val TAG = "MapScreen"
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
     viewModel: MapViewModel = hiltViewModel(),
+//    navController: NavController
 ) {
     val context = LocalContext.current
     val uiSettings = remember { MapUiSettings(zoomControlsEnabled = true) }
     val state by viewModel.state.collectAsState()
-    val dynamicText by viewModel.dynamicText.collectAsState()
     val searchQuery = remember { mutableStateOf("") }
-
 
     val hasLocationPermission = remember {
         ContextCompat.checkSelfPermission(
@@ -57,6 +91,9 @@ fun MapScreen(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    val isGpsEnabled: Boolean = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    val isShowsGpsDialog = remember { mutableStateOf(false) }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -69,12 +106,12 @@ fun MapScreen(
         }
     )
 
-
     LaunchedEffect(Unit) {
+        if (!isGpsEnabled) isShowsGpsDialog.value = true
         if (!hasLocationPermission) {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
-            viewModel.loadSavedLocation() // Load saved location on screen start
+            viewModel.fetchUserLocation(context)
         }
     }
 
@@ -82,8 +119,35 @@ fun MapScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
         val cameraPositionState = rememberCameraPositionState()
+
+        if (isShowsGpsDialog.value) {
+            BasicAlertDialog(onDismissRequest = { isShowsGpsDialog.value = false }) {
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(color = Color.White)
+                        .padding(10.dp)
+                ) {
+                    Text(stringResource(R.string.disables_gps_dialog_title))
+                    Text(stringResource(R.string.disabled_gps_dialog_description))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(onClick = { context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }) {
+                            Text(stringResource(R.string.ok))
+                        }
+                        Button(onClick = { isShowsGpsDialog.value = false }) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                    }
+                }
+            }
+        }
 
         LaunchedEffect(state.marker) {
             state.marker?.let { marker ->
@@ -103,13 +167,12 @@ fun MapScreen(
                     viewModel.addMarker(latLng, context)
                     reverseGeocodeAsync(context, latLng) { address ->
                         val city = address ?: "Unknown Location"
-                        viewModel.saveLocation(latLng, city)
+                        // viewModel.saveLocation(latLng, city)
                     }
                 }
             },
             cameraPositionState = cameraPositionState
         ) {
-
             state.marker?.let { marker ->
                 Marker(
                     state = MarkerState(position = marker),
@@ -120,75 +183,128 @@ fun MapScreen(
         }
 
         // SearchBar
-        Column(
+        SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopCenter)
-        ) {
-            SearchBar(
-                searchQuery = searchQuery,
-                onSearch = { query ->
-                    viewModel.searchLocation(query, context) { latLng ->
-                        latLng?.let {
-                            viewModel.addMarker(it, context)
-                        } ?: Log.e("MapScreen", "Location not found for query: $query")
-                    }
+                .padding(horizontal = 16.dp, vertical = 20.dp)
+                .align(Alignment.TopCenter),
+            searchQuery = searchQuery,
+            onSearch = { query ->
+                viewModel.searchLocation(query, context) { latLng ->
+                    latLng?.let {
+                        viewModel.addMarker(it, context)
+                    } ?: Log.e("MapScreen", "Location not found for query: $query")
                 }
+            }
+        )
+
+        BottomSheet(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            state = state,
+            onConfirmClick = {
+                viewModel.saveLocation()
+            })
+    }
+}
+
+@Composable
+fun BottomSheet(
+    modifier: Modifier = Modifier,
+    state: MapState,
+    onConfirmClick: () -> Unit
+) {
+    Log.i(TAG, "state marker is : ${state.marker}")
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(16.dp)
+            .padding(bottom = 50.dp)
+    ) {
+        Text(
+            text = "Enter your location",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        if (state.marker == null) {
+            Text(
+                text = "Choose your location to start to find events around you",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(vertical = 10.dp)
             )
         }
 
+        if (state.marker != null) {
+            Row(
+                modifier = modifier
+                    .clip(RoundedCornerShape(3.dp))
+                    .fillMaxWidth()
+                    .background(colorResource(R.color.gray))
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    contentScale = ContentScale.None,
+                    painter = painterResource(R.drawable.ic_location),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(colorResource(R.color.location_icon_background))
+                        .size(35.dp, 35.dp)
+                )
 
-        Card(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "Enter your location", style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = dynamicText, style = MaterialTheme.typography.bodySmall)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        state.marker?.let { latLng ->
-
-                            viewModel.deleteLocation()
-
-
-                            reverseGeocodeAsync(context, latLng) { location ->
-                                val city = location ?: "Unknown Location"
-                                viewModel.saveLocation(latLng, city)
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Confirm")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = state.locationText.toString(),
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = modifier.padding(start = 10.dp)
+                )
             }
+        }
+
+        Button(
+            shape = RoundedCornerShape(6.dp),
+            enabled = state.marker != null,
+            colors = ButtonDefaults.buttonColors(
+                disabledContainerColor = colorResource(R.color.un_enabled_container_color),
+                containerColor = colorResource(R.color.enabled_container_color)
+            ),
+            onClick = onConfirmClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp)
+        ) {
+            Text(stringResource(R.string.confirm), color = Color.White)
         }
     }
 }
 
-
-
-
-
 @Composable
 fun SearchBar(
+    modifier: Modifier = Modifier,
     searchQuery: MutableState<String>,
     onSearch: (String) -> Unit,
 ) {
     TextField(
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            errorContainerColor = Color.White,
+            disabledContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            disabledIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+        ),
         value = searchQuery.value,
         onValueChange = { query -> searchQuery.value = query },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        placeholder = { Text("Search ") }, // Hint text
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(5.dp)),
+        placeholder = { Text(stringResource(R.string.search_hint)) }, // Hint text
         leadingIcon = {
             Icon(Icons.Default.Search, contentDescription = "Search Icon") // Search icon
         },
@@ -212,9 +328,6 @@ fun SearchBar(
         )
     )
 }
-
-
-
 
 fun reverseGeocodeAsync(
     context: Context,
@@ -261,32 +374,3 @@ fun reverseGeocodeAsync(
         }
     }
 }
-
-
-@Preview
-@Composable
-fun Map() {
-    MapScreen()
-}
-@Preview
-@Composable
-fun searchPreview() {
-
-    val searchQuery = remember { mutableStateOf("") }
-
-
-    val onSearch: (String) -> Unit = { query ->
-        Log.d("Search", "Search query: $query")
-
-    }
-
-
-    SearchBar(
-        searchQuery = searchQuery,
-        onSearch = onSearch
-    )
-}
-
-
-
-

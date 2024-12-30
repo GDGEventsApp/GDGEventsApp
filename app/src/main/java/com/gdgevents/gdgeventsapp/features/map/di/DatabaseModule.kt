@@ -14,7 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class) // This ensures the module is installed in the Singleton component.
 object DatabaseModule {
-
     @Provides
     @Singleton // Dagger Hilt Singleton annotation
     fun provideAppDatabase(

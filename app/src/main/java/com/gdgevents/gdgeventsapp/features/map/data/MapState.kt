@@ -7,5 +7,6 @@ data class MapState(
     val properties: MapProperties = MapProperties(),
     val isfalloutMap: Boolean = false,
     val marker: LatLng? = null,
-    val userLocation: LatLng? = null
+    val userLocation: LatLng? = null,
+    val locationText: String? = null
 )

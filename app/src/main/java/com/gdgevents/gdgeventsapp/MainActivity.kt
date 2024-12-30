@@ -20,13 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         PermissionManager = (application as GdgApp).permissions
         setContent {
-
             MapScreen()
         }
     }
-
-
-
 }
-
-

@@ -1,83 +1,75 @@
 package com.gdgevents.gdgeventsapp.features.map.presentaion
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gdgevents.gdgeventsapp.R
+import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.gdgevents.gdgeventsapp.features.map.data.db.LocationDao
 import com.gdgevents.gdgeventsapp.features.map.data.db.LocationEntity
-import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
+
+private const val TAG = "MapViewModel"
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val locationDao: LocationDao
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(MapState())
     val state: StateFlow<MapState> = _state
 
-    private val _dynamicText = MutableStateFlow("Choose your location to start to find events around you")
-    val dynamicText: StateFlow<String> = _dynamicText
+    private val _message = MutableSharedFlow<String>()
+    val message: SharedFlow<String> = _message
 
     private val _userLocation = MutableStateFlow<LatLng?>(null)
 
-
     private val _isDeleting = MutableStateFlow(false)
 
-
     fun fetchUserLocation(context: Context) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.e("MapViewModel", "Location permission not granted.")
-            return
-        }
-
+        Log.i(TAG, "fetchUserLocation")
         try {
             fusedLocationProviderClient.lastLocation
                 .addOnSuccessListener { location ->
                     location?.let {
+                        Log.i(TAG, "location is $it")
                         val userLatLng = LatLng(it.latitude, it.longitude)
-
-
                         _userLocation.value = userLatLng
-
-
-                        _state.value = _state.value.copy(
-                            marker = userLatLng
-                        )
-
                         viewModelScope.launch {
-
-                            val governorate = getGovernorateFromLocation(context, userLatLng)
-                            locationDao.insertLocation(
-                                LocationEntity(
-                                    latitude = it.latitude,
-                                    longitude = it.longitude,
-                                    governorate = governorate
+                            _state.emit(
+                                _state.value.copy(
+                                    marker = userLatLng
                                 )
                             )
+                            getGovernorateFromLocation(context, userLatLng)
+//                            locationDao.insertLocation(
+//                                LocationEntity(
+//                                    latitude = it.latitude,
+//                                    longitude = it.longitude,
+//                                    governorate = governorate
+//                                )
+//                            )
                         }
-                    } ?: Log.e("MapViewModel", "Location is null.")
-                }
-                .addOnFailureListener { exception ->
+                    } ?: CoroutineScope(Dispatchers.Main).launch {
+                        _message.emit(context.getString(R.string.error_location_null))
+                    }
+                }.addOnFailureListener { exception ->
+                    Log.e(TAG, "exception")
                     Log.e("MapViewModel", "Failed to fetch location: ${exception.message}")
                 }
         } catch (e: SecurityException) {
@@ -85,14 +77,10 @@ class MapViewModel @Inject constructor(
         }
     }
 
-
     fun addMarker(latLng: LatLng, context: Context) {
         viewModelScope.launch {
-
             reverseGeocodeAsync(context, latLng) { address ->
-
-                val city =address ?: "Unknown Location"
-
+                val city = address ?: "Unknown Location"
 
                 launch {
                     locationDao.insertLocation(
@@ -111,29 +99,21 @@ class MapViewModel @Inject constructor(
     }
 
 
-
-
     // Method to save or update the location in the database
-    fun saveLocation(location: LatLng, governorate: String) {
+    fun saveLocation(governorate: String = _state.value.locationText ?: "") {
         viewModelScope.launch {
-            val locationEntity = LocationEntity(
-                latitude = location.latitude,
-                longitude = location.longitude,
-                governorate = governorate
-            )
+            _userLocation.value?.let {
+                val locationEntity = LocationEntity(
+                    latitude = it.latitude,
+                    longitude = it.longitude,
+                    governorate = governorate
+                )
 
-            val existingLocation = locationDao.getLocation()
+                val existingLocation = locationDao.getLocation()
 
-            if (existingLocation == null) {
-
-                locationDao.insertLocation(locationEntity)
-            } else {
-
-                locationDao.updateLocation(locationEntity)
+                if (existingLocation == null) locationDao.insertLocation(locationEntity)
+                else locationDao.updateLocation(locationEntity)
             }
-
-
-            _dynamicText.value = governorate
         }
     }
 
@@ -145,6 +125,7 @@ class MapViewModel @Inject constructor(
             _isDeleting.value = false
         }
     }
+
     fun searchLocation(query: String, context: Context, onResult: (LatLng?) -> Unit) {
         viewModelScope.launch {
             val geocoder = Geocoder(context, Locale.getDefault())
@@ -164,20 +145,17 @@ class MapViewModel @Inject constructor(
         }
     }
 
-
     fun loadSavedLocation() {
         viewModelScope.launch {
             val location = locationDao.getLocation()
             location?.let {
-
                 _state.value = _state.value.copy(marker = LatLng(it.latitude, it.longitude))
-
-                _dynamicText.value = it.governorate
+//                _dynamicText.value = it.governorate
             }
         }
     }
 
-    suspend fun getGovernorateFromLocation(context: Context, latLng: LatLng): String {
+    private suspend fun getGovernorateFromLocation(context: Context, latLng: LatLng): String {
         return withContext(Dispatchers.IO) {
             val geocoder = Geocoder(context, Locale.getDefault())
             val addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
@@ -185,11 +163,9 @@ class MapViewModel @Inject constructor(
                 "Unknown Governorate"
             } else {
                 val address = addressList[0]
+                _state.emit(_state.value.copy(locationText = "${address.adminArea}, ${address.countryName}"))
                 address.adminArea ?: "Unknown Governorate"
             }
         }
     }
 }
-
-
-
