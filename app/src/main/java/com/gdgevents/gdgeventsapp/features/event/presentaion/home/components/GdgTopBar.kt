@@ -1,4 +1,4 @@
-package com.gdgevents.gdgeventsapp.features.event.presentaion.home.composables
+package com.gdgevents.gdgeventsapp.features.event.presentaion.home.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +10,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,12 +20,15 @@ import com.gdgevents.gdgeventsapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun GdgTopBar(
+    location: String,
+    onNotificationClick: () -> Unit,
+) {
     TopAppBar(
-        title = { LocationInfo() },
+        title = { LocationInfo(location = location) },
         actions = {
             IconButton(
-                onClick = { /* Handle notifications */ }
+                onClick = onNotificationClick
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_bell),
@@ -35,17 +37,17 @@ fun TopBar() {
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
-        )
     )
 }
 
 @Composable
-fun LocationInfo(modifier: Modifier = Modifier) {
+fun LocationInfo(
+    location: String,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_location),
@@ -55,7 +57,7 @@ fun LocationInfo(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = "Alexandria",
+            text = location,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
