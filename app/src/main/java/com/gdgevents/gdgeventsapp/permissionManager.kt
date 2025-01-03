@@ -1,12 +1,12 @@
 package ahmed.praicticing.compose_practice
 
+
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.content.Context
-
 
 class permissionManager(private val context: Context) {
     companion object {

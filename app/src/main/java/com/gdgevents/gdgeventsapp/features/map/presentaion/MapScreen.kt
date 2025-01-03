@@ -9,6 +9,7 @@ import android.location.Geocoder
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -65,6 +66,7 @@ import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -119,6 +121,7 @@ fun MapScreen(
     ) {
         val cameraPositionState = rememberCameraPositionState()
 
+        // GPS dialog
         if (isShowsGpsDialog.value) {
             BasicAlertDialog(onDismissRequest = {
                 isShowsGpsDialog.value = false
@@ -194,6 +197,7 @@ fun MapScreen(
             }
         }
 
+
         LaunchedEffect(state.marker) {
             state.marker?.let { marker ->
                 val savedLatLng = LatLng(marker.latitude, marker.longitude)
@@ -201,31 +205,16 @@ fun MapScreen(
             }
         }
 
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            properties = state.properties,
+        MapContent(
+            state = state,
             uiSettings = uiSettings,
+            hasLocationPermission = hasLocationPermission,
+            requestPermissionLauncher = requestPermissionLauncher,
+            cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
-                if (!hasLocationPermission) {
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                } else {
-                    viewModel.addMarker(latLng, context)
-                    reverseGeocodeAsync(context, latLng) { address ->
-                        val city = address ?: "Unknown Location"
-                        // viewModel.saveLocation(latLng, city)
-                    }
-                }
-            },
-            cameraPositionState = cameraPositionState
-        ) {
-            state.marker?.let { marker ->
-                Marker(
-                    state = MarkerState(position = marker),
-                    title = "Your Location",
-                    snippet = "Lat: ${marker.latitude}, Lng: ${marker.longitude}"
-                )
+                viewModel.addMarker(latLng, context)
             }
-        }
+        )
 
         // SearchBar
         SearchBar(
@@ -414,6 +403,38 @@ fun reverseGeocodeAsync(
         } catch (e: Exception) {
             Log.e("MapScreen", "Error fetching address: ${e.message}")
             callback("Error fetching location")
+        }
+    }
+}
+
+@Composable
+fun MapContent(
+    state: MapState,
+    uiSettings: MapUiSettings,
+    hasLocationPermission: Boolean,
+    requestPermissionLauncher: ManagedActivityResultLauncher<String, Boolean>,
+    cameraPositionState: CameraPositionState,
+    onMapClick: (LatLng) -> Unit
+) {
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        properties = state.properties,
+        uiSettings = uiSettings,
+        onMapClick = { latLng ->
+            if (!hasLocationPermission) {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            } else {
+                onMapClick(latLng)
+            }
+        },
+        cameraPositionState = cameraPositionState
+    ) {
+        state.marker?.let { marker ->
+            Marker(
+                state = MarkerState(position = marker),
+                title = "Your Location",
+                snippet = "Lat: ${marker.latitude}, Lng: ${marker.longitude}"
+            )
         }
     }
 }
