@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.gdgevents.gdgeventsapp.GdgAppState
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.MapRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.MapRoute
 
 fun NavController.navigateToMapScreen(navOptions: NavOptions? = null) =
     navigate(MapRoute, navOptions)

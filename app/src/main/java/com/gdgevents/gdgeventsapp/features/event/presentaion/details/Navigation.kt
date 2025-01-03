@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.gdgevents.gdgeventsapp.GdgAppState
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.DetailRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.DetailRoute
 
 fun NavController.navigateToDetail(navOptions: NavOptions? = null) =
     navigate(DetailRoute, navOptions)

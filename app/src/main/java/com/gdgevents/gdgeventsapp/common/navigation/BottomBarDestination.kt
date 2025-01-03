@@ -3,13 +3,13 @@ package com.gdgevents.gdgeventsapp.common.navigation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.gdgevents.gdgeventsapp.R
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.FavoriteRoute
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.HomeRoute
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.MyAgendaRoute
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.SettingsRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.FavoriteRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.HomeRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.MyAgendaRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.SettingsRoute
 
-enum class NestedDestination(
-    val route: NestedRoute,
+enum class BottomBarDestination(
+    val route: BottomNavRoute,
     @DrawableRes val selectedIconId: Int,
     @DrawableRes val unselectedIconId: Int,
     @StringRes val labelId: Int,

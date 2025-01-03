@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.ContactUsRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.ContactUsRoute
 
 fun NavController.navigateToContactUsScreen(navOptions: NavOptions? = null) =
     navigate(ContactUsRoute, navOptions)

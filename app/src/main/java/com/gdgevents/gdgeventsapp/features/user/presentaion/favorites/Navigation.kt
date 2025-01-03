@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.gdgevents.gdgeventsapp.GdgAppState
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.FavoriteRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.FavoriteRoute
 
 fun NavController.navigateToFavoriteScreen(navOptions: NavOptions? = null) =
     navigate(FavoriteRoute, navOptions)

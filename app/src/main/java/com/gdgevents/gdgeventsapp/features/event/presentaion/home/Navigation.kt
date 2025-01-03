@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.gdgevents.gdgeventsapp.GdgAppState
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.HomeRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.HomeRoute
 
 fun NavController.navigateToHome(navOptions: NavOptions? = null) = navigate(HomeRoute, navOptions)
 

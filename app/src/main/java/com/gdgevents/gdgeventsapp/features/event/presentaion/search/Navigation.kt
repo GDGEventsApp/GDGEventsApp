@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.gdgevents.gdgeventsapp.GdgAppState
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.SearchRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.SearchRoute
 
 fun NavController.navigateToSearchScreen(navOptions: NavOptions? = null) =
     navigate(SearchRoute, navOptions)

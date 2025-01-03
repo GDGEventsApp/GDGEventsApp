@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.HelpSupportRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.HelpSupportRoute
 
 fun NavController.navigateToHelpSupportScreen(navOptions: NavOptions? = null) =
     navigate(HelpSupportRoute, navOptions)

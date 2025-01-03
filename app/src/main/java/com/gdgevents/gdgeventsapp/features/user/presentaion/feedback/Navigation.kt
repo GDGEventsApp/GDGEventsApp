@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.FeedbackRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.FeedbackRoute
 
 fun NavController.navigateToFeedbackScreen(navOptions: NavOptions? = null) =
     navigate(FeedbackRoute, navOptions)

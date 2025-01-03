@@ -7,10 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.gdgevents.gdgeventsapp.common.navigation.NestedRoute.HomeRoute
-import com.gdgevents.gdgeventsapp.common.navigation.OutNavHost
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.NestedNavRoute
-import com.gdgevents.gdgeventsapp.common.navigation.OutRoute.OnboardingRoute
+import com.gdgevents.gdgeventsapp.common.navigation.BottomNavRoute.HomeRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainNavHost
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.NestedNavRoute
+import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.OnboardingRoute
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val isFirstLaunch = true // get user info from datastore
-        val outStartDestination = if (isFirstLaunch) OnboardingRoute else NestedNavRoute
-        val nestedStartDestination = HomeRoute
+        val mainStartDestination = if (isFirstLaunch) OnboardingRoute else NestedNavRoute
+        val bottomBarStartDestination = HomeRoute
 
         installSplashScreen()
         enableEdgeToEdge()
@@ -30,12 +30,12 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val appState = rememberGdgAppState(
-                outStartDestination = outStartDestination,
-                nestedStartDestination = nestedStartDestination,
+                mainStartDestination = mainStartDestination,
+                bottomBarStartDestination = bottomBarStartDestination,
             )
 
             GDGEventsAppTheme {
-                OutNavHost(
+                MainNavHost(
                     modifier = Modifier.fillMaxSize(),
                     appState = appState
                 )

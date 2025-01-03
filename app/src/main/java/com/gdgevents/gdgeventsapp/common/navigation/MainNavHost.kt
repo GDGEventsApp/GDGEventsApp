@@ -21,13 +21,13 @@ import com.gdgevents.gdgeventsapp.features.user.presentaion.contactUs.contactUsR
 import com.gdgevents.gdgeventsapp.features.user.presentaion.feedback.feedbackRoute
 
 @Composable
-fun OutNavHost(
+fun MainNavHost(
     appState: GdgAppState,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
-        navController = appState.outNavController,
-        startDestination = appState.outStartDestination,
+        navController = appState.mainNavController,
+        startDestination = appState.mainStartDestination,
         enterTransition = {
             slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Left,

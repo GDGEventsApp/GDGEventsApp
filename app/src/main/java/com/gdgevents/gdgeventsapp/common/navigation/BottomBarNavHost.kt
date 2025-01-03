@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -31,10 +32,10 @@ import com.gdgevents.gdgeventsapp.features.user.presentaion.favorites.favoriteRo
 import com.gdgevents.gdgeventsapp.features.user.presentaion.myAgenda.myAgendaRoute
 
 @Composable
-fun NestedNavHost(
+fun BottomBarNavHost(
     appState: GdgAppState,
 ) {
-    val currentNestedDestination = appState.nestedDestination
+    val currentNestedDestination = appState.bottomBarDestination
 
     Scaffold(
         bottomBar = {
@@ -46,19 +47,18 @@ fun NestedNavHost(
                         .background(MaterialTheme.colorScheme.onTertiary),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    NestedDestination.entries.forEach { destination ->
+                    BottomBarDestination.entries.forEach { destination ->
                         val selected =
                             currentNestedDestination?.hasRoute(destination.route::class) ?: false
-                        val iconId = if (selected) destination.selectedIconId
-                        else destination.unselectedIconId
-                        val tintColor = if (selected) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.tertiary
+                        val (iconId, tintColor) =
+                            if (selected) destination.selectedIconId to MaterialTheme.colorScheme.primary
+                            else destination.unselectedIconId to MaterialTheme.colorScheme.tertiary
                         GdgNavItem(
                             iconId = iconId,
                             labelId = destination.labelId,
                             tintColor = tintColor,
                             onClick = {
-                                appState.navigateToNestedDestination(destination.route)
+                                appState.navigateToBottomNavDestination(destination.route)
                             },
                         )
                     }
@@ -70,9 +70,10 @@ fun NestedNavHost(
         NavHost(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding()),
-            navController = appState.nestedNavController,
-            startDestination = appState.nestedStartDestination,
+                .padding(bottom = innerPadding.calculateBottomPadding())
+                .consumeWindowInsets(WindowInsets.navigationBars),
+            navController = appState.bottomBarNavController,
+            startDestination = appState.bottomBarStartDestination,
             enterTransition = {
                 fadeIn(tween(300))
             },
