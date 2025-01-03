@@ -13,6 +13,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,7 +48,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -56,10 +57,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.google.android.gms.maps.model.CameraPosition
@@ -71,13 +72,10 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
 
-private const val TAG = "MapScreen"
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
     viewModel: MapViewModel = hiltViewModel(),
-//    navController: NavController
 ) {
     val context = LocalContext.current
     val uiSettings = remember { MapUiSettings(zoomControlsEnabled = true) }
@@ -122,29 +120,76 @@ fun MapScreen(
         val cameraPositionState = rememberCameraPositionState()
 
         if (isShowsGpsDialog.value) {
-            BasicAlertDialog(onDismissRequest = { isShowsGpsDialog.value = false }) {
-                Column(
+            BasicAlertDialog(onDismissRequest = {
+                isShowsGpsDialog.value = false
+            }) {
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(15.dp))
-                        .background(color = Color.White)
-                        .padding(10.dp)
+                        .widthIn(
+                            min = 70.dp,
+                            max = 110.dp
+                        )
+
                 ) {
-                    Text(stringResource(R.string.disables_gps_dialog_title))
-                    Text(stringResource(R.string.disabled_gps_dialog_description))
-                    Row(
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
+                            .align(Alignment.Center)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(color = Color.White)
+                            .padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Button(onClick = { context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }) {
+                        Text(
+                            stringResource(R.string.disables_gps_dialog_title),
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        Text(
+                            stringResource(R.string.disabled_gps_dialog_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                        )
+
+                        Button(
+                            shape = RoundedCornerShape(5.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 3.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.enabled_container_color)
+                            ),
+                            onClick = {
+                                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                            }) {
                             Text(stringResource(R.string.ok))
                         }
-                        Button(onClick = { isShowsGpsDialog.value = false }) {
-                            Text(stringResource(R.string.cancel))
+
+                        Button(
+                            shape = RoundedCornerShape(5.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.gray)),
+                            onClick = {
+                                isShowsGpsDialog.value = false
+                            }) {
+                            Text(stringResource(R.string.cancel), color = Color.Black)
                         }
                     }
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(10.dp)
+                            .clickable {
+                                isShowsGpsDialog.value = false
+                            }
+                    )
                 }
             }
         }
@@ -213,8 +258,6 @@ fun BottomSheet(
     state: MapState,
     onConfirmClick: () -> Unit
 ) {
-    Log.i(TAG, "state marker is : ${state.marker}")
-
     Column(
         modifier = modifier
             .fillMaxWidth()
