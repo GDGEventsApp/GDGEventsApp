@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.gdgevents.gdgeventsapp.common.navigation.GdgNavHost
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.gdgevents.gdgeventsapp.features.event.presentaion.home.HomeScreen
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,7 +22,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         installSplashScreen()
-
         enableEdgeToEdge()
 
         setContent {
@@ -39,3 +40,9 @@ class MainActivity : ComponentActivity() {
 }
 
 
+
+                HomeScreen()
+            }
+        }
+    }
+}

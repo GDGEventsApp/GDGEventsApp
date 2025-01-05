@@ -93,6 +93,8 @@ dependencies {
 
     // Coil - asynchronous image loading
     implementation(libs.coil.compose)
+    // Coil - image Fetcher
+    implementation(libs.coil.network.okhttp)
 
     // datastore - make type safe local storage
     implementation(libs.androidx.datastore)
