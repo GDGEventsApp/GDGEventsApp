@@ -1,5 +1,6 @@
-package com.gdgevents.gdgeventsapp.features.settings.presentaion.settings
+package com.gdgevents.gdgeventsapp.features.home.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,22 +8,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
 import androidx.navigation.NavController
 import com.gdgevents.gdgeventsapp.common.navigation.Screen
 
 @Composable
-fun SettingsScreen(
-    viewModel: SettingsViewModel = hiltViewModel(),
-
-) {
-    SettingsContent()
+fun HomeScreen() {
+    HomeContent()
 }
-
 @Composable
-fun SettingsContent() {
-    // Your Search Screen UI
-    Column(modifier = Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
-        Text(text = "Settings Screen")
+fun HomeContent(){
+    Column(modifier = Modifier.fillMaxSize(),Arrangement.Center,Alignment.CenterHorizontally) {
+        Text(text = "Home Screen")
+
     }
 }
