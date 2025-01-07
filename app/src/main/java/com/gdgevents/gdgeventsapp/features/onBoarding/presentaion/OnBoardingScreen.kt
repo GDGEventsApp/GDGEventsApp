@@ -39,21 +39,7 @@ fun OnBoardingScreen(
 
 
 
-//@Preview(
-//    showBackground = true,
-//    showSystemUi = true,
-//    device = Devices.PIXEL_6
-//)
-//@Preview(
-//    showBackground = true,
-//    showSystemUi = true,
-//    device = Devices.PIXEL_3A
-//)
-//@Preview(
-//    showBackground = true,
-//    showSystemUi = true,
-//    device = Devices.PIXEL_2
-//)
+
 @Preview(
     showBackground = true,
     showSystemUi = true,

@@ -1,7 +1,6 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.components
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -85,7 +83,6 @@ fun OnBoardItem(modifier: Modifier = Modifier)
                     currentPage = onBoardList[pagerState.currentPage].id,
                     totalPages = pagerState.pageCount,
                     onNextClick = {
-                        //if (pagerState.currentPage < pagerState.pageCount)
                             scope.launch() {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
 
@@ -140,29 +137,14 @@ fun OnboardingTextContainer(
                     .fillMaxWidth()
                     .padding(9.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                DotsIndicator(
+                    totalDots = totalPages,
+                    selectedIndex = currentPage,
                     modifier = modifier
-                        .weight(2f)
+                        .weight(1f)
                         .align(Alignment.CenterVertically)
                         .padding(start = 16.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    repeat(totalPages) { index ->
-                        val isSelected = currentPage == index
-                        val color = if (isSelected)
-                            MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.secondary
-                        Spacer(modifier = modifier.width(4.dp))
-                        Box(
-                            modifier = modifier
-                                .height(8.dp)
-                                .width(if (isSelected) 33.dp else 8.dp)
-                                .background(color, CircleShape)
-                                .padding(horizontal = 4.dp),
-                        )
-                    }
-                }
+                )
                 Text(
                     text = "Next",
                     style = MaterialTheme.typography.bodyMedium,
