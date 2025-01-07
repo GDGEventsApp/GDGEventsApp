@@ -14,7 +14,7 @@ class OnBoardingViewModel @Inject constructor() : ViewModel() {
     private val _currentPage = MutableStateFlow(0)
     val currentPage: StateFlow<Int> = _currentPage
 
-    private val totalPages: Int = onBoardList.size // Total number of pages
+    private val totalPages: Int = onBoardList.size+1 // Total number of pages
 
     fun onNextClick() {
         if (_currentPage.value < totalPages - 1) {

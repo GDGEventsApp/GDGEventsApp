@@ -1,5 +1,6 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -39,53 +41,53 @@ import ir.kaaveh.sdpcompose.sdp
 import kotlinx.coroutines.launch
 
 @Composable
-fun OnBoardItem(
-    modifier: Modifier = Modifier,
-) {
+fun OnBoardItem(modifier: Modifier = Modifier)
+{
+    val pagerState = rememberPagerState(pageCount = { onBoardList.size+1 })
+    val scope = rememberCoroutineScope()
 
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        val pagerState = rememberPagerState(pageCount = {onBoardList.size})
-        val scope = rememberCoroutineScope()
+    Box(modifier = modifier.fillMaxSize())
+    {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) { index ->
-            if (index < onBoardList.size){
+            if (index < onBoardList.size) {
+                Log.d("pagerState",pagerState.currentPage.toString())
                 Image(
-                    painter = painterResource(id = onBoardList[pagerState.currentPage].imageRes),
+                    painter = painterResource(id = onBoardList[index].imageRes),
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .height(500.sdp)
                         .fillMaxWidth()
-                        .padding( bottom = 90.sdp,start = 50.sdp, end = 50.sdp),
+                        .padding(bottom = 90.sdp, start = 50.sdp, end = 50.sdp),
                 )
 
-            } else{
+            } else {
                 GetStartedScreen()
             }
 
         }
-        if (pagerState.currentPage < pagerState.pageCount){
+        if (pagerState.currentPage < onBoardList.size) {
             Column(
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 OnboardingTextContainer(
+                    modifier=
+                    if(pagerState.currentPage== onBoardList.lastIndex)
+                                Modifier.alpha(alpha = 1-pagerState.currentPageOffsetFraction)
+                    else Modifier,
                     title = onBoardList[pagerState.currentPage].title,
                     description = onBoardList[pagerState.currentPage].description,
                     currentPage = onBoardList[pagerState.currentPage].id,
                     totalPages = pagerState.pageCount,
                     onNextClick = {
-                        if (pagerState.currentPage < pagerState.pageCount)
+                        //if (pagerState.currentPage < pagerState.pageCount)
                             scope.launch() {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
 
+                            }
                     },
                 )
             }
@@ -145,15 +147,15 @@ fun OnboardingTextContainer(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     repeat(totalPages) { index ->
-                        val currentPage = currentPage == index
-                        val color = if (currentPage)
+                        val isSelected = currentPage == index
+                        val color = if (isSelected)
                             MaterialTheme.colorScheme.onPrimary
                         else MaterialTheme.colorScheme.secondary
                         Spacer(modifier = modifier.width(4.dp))
                         Box(
                             modifier = modifier
                                 .height(8.dp)
-                                .width(if (currentPage) 33.dp else 8.dp)
+                                .width(if (isSelected) 33.dp else 8.dp)
                                 .background(color, CircleShape)
                                 .padding(horizontal = 4.dp),
                         )
@@ -185,7 +187,6 @@ fun GetStartedScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-
             buildAnnotatedString {
                 append("Welcome to \n")
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
@@ -215,7 +216,8 @@ fun GetStartedScreen(
                 .padding(bottom = 24.dp, top = 16.dp),
         )
         GdgButton(
-            text = "Get Started", onClick = {
+            text = "Get Started",
+            onClick = {
                 // TODO: Navigate to another screen ( confirm location)
             },
         )
@@ -233,7 +235,6 @@ private fun GetStartedScreenPreview() {
         GetStartedScreen()
     }
 }
-
 
 
 @Preview(
