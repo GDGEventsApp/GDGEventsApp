@@ -1,6 +1,7 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.components
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -78,8 +80,8 @@ fun OnBoardItem(modifier: Modifier = Modifier)
                     if(pagerState.currentPage== onBoardList.lastIndex)
                                 Modifier.alpha(alpha = 1-pagerState.currentPageOffsetFraction)
                     else Modifier,
-                    title = onBoardList[pagerState.currentPage].title,
-                    description = onBoardList[pagerState.currentPage].description,
+                    title = stringResource(onBoardList[pagerState.currentPage].title),
+                    description = stringResource(onBoardList[pagerState.currentPage].description),
                     currentPage = onBoardList[pagerState.currentPage].id,
                     totalPages = pagerState.pageCount,
                     onNextClick = {

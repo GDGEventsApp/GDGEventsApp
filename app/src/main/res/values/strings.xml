@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">GDGEventsApp</string>
+    <string name="onboarding_title_1st_page">To Look Up More Events or Activities Nearby By Map</string>
+    <string name="onboarding_description_1st_page">" In publishing and graphic design, Lorem is a placeholder text commonly."</string>
+    <string name="onboarding_title_2nd_page">Explore More About Event Technologies</string>
+    <string name="onboarding_description_2nd_page">" In publishing and graphic design, Lorem is a placeholder text commonly"</string>
 </resources>
