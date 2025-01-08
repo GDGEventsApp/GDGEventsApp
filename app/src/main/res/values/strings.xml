@@ -4,4 +4,6 @@
     <string name="onboarding_description_1st_page">" In publishing and graphic design, Lorem is a placeholder text commonly."</string>
     <string name="onboarding_title_2nd_page">Explore More About Event Technologies</string>
     <string name="onboarding_description_2nd_page">" In publishing and graphic design, Lorem is a placeholder text commonly"</string>
+    <string name="skip">Skip</string>
+    <string name="get_started">Get Started</string>
 </resources>

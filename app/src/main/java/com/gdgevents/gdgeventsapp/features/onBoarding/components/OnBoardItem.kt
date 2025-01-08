@@ -1,6 +1,6 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.components
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,7 +41,7 @@ import ir.kaaveh.sdpcompose.sdp
 import kotlinx.coroutines.launch
 
 @Composable
-fun OnBoardItem(modifier: Modifier = Modifier)
+fun OnBoardItem(modifier: Modifier = Modifier,onItemClicked: () -> Unit)
 {
     val pagerState = rememberPagerState(pageCount = { onBoardList.size+1 })
     val scope = rememberCoroutineScope()
@@ -53,7 +53,7 @@ fun OnBoardItem(modifier: Modifier = Modifier)
             modifier = Modifier.fillMaxSize()
         ) { index ->
             if (index < onBoardList.size) {
-                Log.d("pagerState",pagerState.currentPage.toString())
+                //Log.d("pagerState",pagerState.currentPage.toString())
                 Image(
                     painter = painterResource(id = onBoardList[index].imageRes),
                     contentDescription = null,
@@ -65,7 +65,7 @@ fun OnBoardItem(modifier: Modifier = Modifier)
                 )
 
             } else {
-                GetStartedScreen()
+                GetStartedScreen(onClick = onItemClicked)
             }
 
         }
@@ -90,6 +90,18 @@ fun OnBoardItem(modifier: Modifier = Modifier)
                     },
                 )
             }
+        }
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.TopEnd),
+            visible = pagerState.currentPage< onBoardList.size
+        ) {
+            Text(
+                text = stringResource(R.string.skip),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .padding(top = 45.dp, end = 24.dp)
+                    .clickable(onClick = onItemClicked)
+            )
         }
 
     }
@@ -162,6 +174,7 @@ fun OnboardingTextContainer(
 @Composable
 fun GetStartedScreen(
     modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -200,10 +213,8 @@ fun GetStartedScreen(
                 .padding(bottom = 24.dp, top = 16.dp),
         )
         GdgButton(
-            text = "Get Started",
-            onClick = {
-                // TODO: Navigate to another screen ( confirm location)
-            },
+            text = stringResource(R.string.get_started),
+            onButtonClick=onClick,
         )
     }
 }
@@ -216,7 +227,7 @@ fun GetStartedScreen(
 @Composable
 private fun GetStartedScreenPreview() {
     GDGEventsAppTheme {
-        GetStartedScreen()
+        GetStartedScreen(onClick = {})
     }
 }
 
@@ -244,7 +255,7 @@ private fun GetStartedScreenPreview() {
 @Composable
 private fun OnBoardModelPrev1() {
     GDGEventsAppTheme {
-        OnBoardItem()
+        OnBoardItem(onItemClicked = {})
     }
 
 }
