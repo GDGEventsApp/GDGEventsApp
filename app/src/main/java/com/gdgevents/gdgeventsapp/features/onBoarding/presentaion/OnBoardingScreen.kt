@@ -16,6 +16,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.gdgevents.gdgeventsapp.common.navigation.Destination
 import com.gdgevents.gdgeventsapp.features.onBoarding.components.OnBoardItem
 
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
@@ -23,11 +26,14 @@ import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 @Composable
 fun OnBoardingScreen(
     viewModel: OnBoardingViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     OnBoardItem(onItemClicked = {
         //Log.d("OnBoardingTAG","OnBoardingItemClicked")
-
         // TODO: Navigate to another screen ( confirm location)
+        navController.popBackStack()
+        navController.navigate(Destination.Home.route)
+
     })
 }
 
@@ -42,6 +48,6 @@ fun OnBoardingScreen(
 @Composable
 private fun OnBoardingScreenPrev() {
     GDGEventsAppTheme {
-        OnBoardingScreen()
+        //OnBoardingScreen()
     }
 }
