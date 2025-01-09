@@ -31,6 +31,7 @@ fun OnBoardingScreen(
     OnBoardItem(onItemClicked = {
         //Log.d("OnBoardingTAG","OnBoardingItemClicked")
         // TODO: Navigate to another screen ( confirm location)
+        viewModel.saveOnBoardingState()
         navController.popBackStack()
         navController.navigate(Destination.Home.route)
 

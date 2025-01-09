@@ -1,5 +1,6 @@
 package com.gdgevents.gdgeventsapp.common.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -12,13 +13,14 @@ import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.OnBoardingScre
 @Composable
 fun GdgNavHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController
-) {
+    navController: NavHostController,
+    startDestination: String) {
     // implement NavHost
     NavHost(
         navController = navController,
-        startDestination = Destination.OnBoarding.route,
-        ){
+        startDestination = startDestination
+        )
+    {
         composable(route=Destination.OnBoarding.route) { OnBoardingScreen(navController = navController)  }
 
         composable(route=Destination.Home.route) { HomeScreen()  }

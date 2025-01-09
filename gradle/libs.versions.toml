@@ -11,7 +11,7 @@ activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 
 #-Added versions
-hilt = "2.52" # version 2.53 has an issue with kapt
+hilt = "2.54" # version 2.53 has an issue with kapt
 coilCompose = "3.0.4"
 navigationCompose = "2.8.5"
 retrofit = "2.11.0"
