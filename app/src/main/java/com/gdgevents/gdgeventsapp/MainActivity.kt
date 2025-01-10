@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.gdgevents.gdgeventsapp.common.navigation.GdgNavHost
-import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.OnBoardingScreen
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,9 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GDGEventsAppTheme {
                 val navController= rememberNavController()
-                //OnBoardingScreen(navController = navController)
                 GdgNavHost(navController = navController)
-
             }
         }
     }

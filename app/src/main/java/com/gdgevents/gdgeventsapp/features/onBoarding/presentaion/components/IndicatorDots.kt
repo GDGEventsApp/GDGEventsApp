@@ -1,6 +1,4 @@
-package com.gdgevents.gdgeventsapp.features.onBoarding.components
-
-
+package com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -21,8 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 
 @Composable
 fun DotsIndicator(
@@ -31,21 +30,17 @@ fun DotsIndicator(
     modifier: Modifier = Modifier,
     selectedColor: Color = MaterialTheme.colorScheme.onPrimary,
     unSelectedColor: Color = MaterialTheme.colorScheme.secondary,
-    dotHeight: Dp = 8.dp,
-    normalDotWidth: Dp = 8.dp,
-    selectedDotWidth: Dp = 33.dp,
-    spacing: Dp = 4.dp
 ) {
     Row(
         modifier = modifier
             .wrapContentWidth()
-            .height(dotHeight),
-        horizontalArrangement = Arrangement.spacedBy(spacing),
+            .height(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(totalDots) { index ->
             val width by animateDpAsState(
-                targetValue = if (index == selectedIndex) selectedDotWidth else normalDotWidth,
+                targetValue = if (index == selectedIndex) 33.dp else 8.dp,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,
                     stiffness = Spring.StiffnessLow
@@ -60,10 +55,20 @@ fun DotsIndicator(
             Spacer(
                 modifier = Modifier
                     .width(width)
-                    .height(dotHeight)
+                    .height(8.dp)
                     .clip(CircleShape)
                     .background(color)
             )
         }
+    }
+}
+@Preview
+@Composable
+private fun DotsIndicatorPreview() {
+    GDGEventsAppTheme {
+        DotsIndicator(
+            totalDots = 3,
+            selectedIndex = 1,
+        )
     }
 }

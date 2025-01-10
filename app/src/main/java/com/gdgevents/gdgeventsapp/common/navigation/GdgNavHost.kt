@@ -1,27 +1,42 @@
 package com.gdgevents.gdgeventsapp.common.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.HomeScreen
-import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.OnBoardingScreen
+import androidx.navigation.compose.rememberNavController
+import com.gdgevents.gdgeventsapp.features.map.presentaion.MapScreen
+import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.OnBoardingEvent
+import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.OnBoardingViewModel
+import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.OnboardingScreen
 
 @Composable
 fun GdgNavHost(
-    modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController = rememberNavController(),
 ) {
-    // implement NavHost
+    val viewModel : OnBoardingViewModel = hiltViewModel()
+    val hasEntered = viewModel.hasEntered.collectAsState(initial = false)
     NavHost(
         navController = navController,
-        startDestination = Destination.OnBoarding.route,
+        startDestination = if(hasEntered.value) Destination.Map.route else Destination.OnBoarding.route,
         ){
-        composable(route=Destination.OnBoarding.route) { OnBoardingScreen(navController = navController)  }
+        composable(route=Destination.OnBoarding.route) {
+            OnboardingScreen(
+                event = viewModel::onEvent,
+                onItemClicked = {
+                    viewModel.onEvent(OnBoardingEvent.SaveAppEntry)
+                    navController.navigate(Destination.Map.route){
+                        popUpTo(Destination.OnBoarding.route){
+                            inclusive=true
+                        }
+                    }
+                }
+            )
+             }
 
-        composable(route=Destination.Home.route) { HomeScreen()  }
+        composable(route=Destination.Map.route) { MapScreen()  }
 
     }
 

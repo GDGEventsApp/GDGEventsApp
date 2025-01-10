@@ -6,4 +6,9 @@
     <string name="onboarding_description_2nd_page">" In publishing and graphic design, Lorem is a placeholder text commonly"</string>
     <string name="skip">Skip</string>
     <string name="get_started">Get Started</string>
+    <string name="welcome_to">Welcome to \n</string>
+    <string name="gdg_events">"GDG Events "</string>
+    <string name="app">"app "</string>
+    <string name="discover_gdg_events_around_you">Discover GDG events around you</string>
+    <string name="next">Next</string>
 </resources>

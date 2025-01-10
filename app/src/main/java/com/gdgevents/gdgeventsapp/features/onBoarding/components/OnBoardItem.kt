@@ -36,7 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.common.components.GdgButton
-import com.gdgevents.gdgeventsapp.features.onBoarding.model.onBoardList
+import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.components.DotsIndicator
+import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.model.onBoardList
 import ir.kaaveh.sdpcompose.sdp
 import kotlinx.coroutines.launch
 
@@ -53,7 +54,6 @@ fun OnBoardItem(modifier: Modifier = Modifier,onItemClicked: () -> Unit)
             modifier = Modifier.fillMaxSize()
         ) { index ->
             if (index < onBoardList.size) {
-                //Log.d("pagerState",pagerState.currentPage.toString())
                 Image(
                     painter = painterResource(id = onBoardList[index].imageRes),
                     contentDescription = null,
@@ -83,7 +83,7 @@ fun OnBoardItem(modifier: Modifier = Modifier,onItemClicked: () -> Unit)
                     currentPage = onBoardList[pagerState.currentPage].id,
                     totalPages = pagerState.pageCount,
                     onNextClick = {
-                            scope.launch() {
+                            scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
 
                             }
