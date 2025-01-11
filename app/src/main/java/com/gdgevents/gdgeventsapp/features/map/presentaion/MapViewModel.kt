@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -97,7 +96,6 @@ class MapViewModel @Inject constructor(
             marker = latLng
         )
     }
-
 
     // Method to save or update the location in the database
     fun saveLocation(governorate: String = _state.value.locationText ?: "") {

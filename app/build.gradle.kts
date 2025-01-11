@@ -27,6 +27,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "MAP_API_KEY", "\"AIzaSyCLzDsqjcZ6gcm7riPHj82vURPk23BQW-4\"")
+        manifestPlaceholders["MAP_API_KEY"] = "AIzaSyCLzDsqjcZ6gcm7riPHj82vURPk23BQW-4"
     }
 
     buildTypes {
@@ -47,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -58,7 +62,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,7 +71,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
-    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -131,7 +133,7 @@ dependencies {
     // splash screen - backwards compatibility
     implementation(libs.androidx.core.splashscreen)
 
-    implementation (libs.maps.compose)
+    implementation(libs.maps.compose)
     implementation(libs.play.services.maps.v1810)
     implementation(libs.kotlinx.coroutines.play.services)
 

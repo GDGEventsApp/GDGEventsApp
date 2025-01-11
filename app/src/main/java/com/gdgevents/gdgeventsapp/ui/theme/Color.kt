@@ -73,3 +73,7 @@ val SurfaceContainerLowDark = Color(0xFF1C1B1C)
 val SurfaceContainerDark = Color(0xFF201F20)
 val SurfaceContainerHighDark = Color(0xFF2B2A2A)
 val SurfaceContainerHighestDark = Color(0xFF353435)
+
+val UnEnabledContainerColor = Color(0xFFCADCF3)
+val LocationDetailsBackground = Color(0xFFF6F6F6)
+val LocationIconBackground = Color(0xFFDDDBDB)

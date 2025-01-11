@@ -64,6 +64,10 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.features.map.data.MapState
+import com.gdgevents.gdgeventsapp.ui.theme.LocationDetailsBackground
+import com.gdgevents.gdgeventsapp.ui.theme.LocationIconBackground
+import com.gdgevents.gdgeventsapp.ui.theme.PrimaryLight
+import com.gdgevents.gdgeventsapp.ui.theme.UnEnabledContainerColor
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -163,7 +167,7 @@ fun MapScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 3.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = colorResource(R.color.enabled_container_color)
+                                containerColor = PrimaryLight
                             ),
                             onClick = {
                                 context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
@@ -175,7 +179,7 @@ fun MapScreen(
                             shape = RoundedCornerShape(5.dp),
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.gray)),
+                            colors = ButtonDefaults.buttonColors(containerColor = LocationDetailsBackground),
                             onClick = {
                                 isShowsGpsDialog.value = false
                             }) {
@@ -274,7 +278,7 @@ fun BottomSheet(
                 modifier = modifier
                     .clip(RoundedCornerShape(3.dp))
                     .fillMaxWidth()
-                    .background(colorResource(R.color.gray))
+                    .background(LocationDetailsBackground)
                     .padding(vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -285,7 +289,7 @@ fun BottomSheet(
                     modifier = Modifier
                         .padding(5.dp)
                         .clip(RoundedCornerShape(3.dp))
-                        .background(colorResource(R.color.location_icon_background))
+                        .background(LocationIconBackground)
                         .size(35.dp, 35.dp)
                 )
 
@@ -302,8 +306,8 @@ fun BottomSheet(
             shape = RoundedCornerShape(6.dp),
             enabled = state.marker != null,
             colors = ButtonDefaults.buttonColors(
-                disabledContainerColor = colorResource(R.color.un_enabled_container_color),
-                containerColor = colorResource(R.color.enabled_container_color)
+                disabledContainerColor = UnEnabledContainerColor,
+                containerColor = PrimaryLight
             ),
             onClick = onConfirmClick,
             modifier = Modifier
