@@ -4,7 +4,6 @@ import android.content.Context
 import android.location.Geocoder
 import com.gdgevents.gdgeventsapp.features.map.data.MapRepoImpl
 import com.gdgevents.gdgeventsapp.features.map.domain.MapRepo
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
