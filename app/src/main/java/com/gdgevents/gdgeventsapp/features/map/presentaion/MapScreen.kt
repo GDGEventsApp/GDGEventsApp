@@ -1,9 +1,7 @@
 package com.gdgevents.gdgeventsapp.features.map.presentaion
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
@@ -56,9 +54,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gdgevents.gdgeventsapp.PermissionManager
 import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.ui.theme.LocationDetailsBackground
 import com.gdgevents.gdgeventsapp.ui.theme.LocationIconBackground
@@ -84,29 +82,25 @@ fun MapScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle("")
     val searchQuery = remember { mutableStateOf("") }
-
-    val hasLocationPermission = remember {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
+    val isShowsGpsDialog = remember { mutableStateOf(false) }
+    val isGpsEnabled = remember { mutableStateOf(false) }
 
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    val isGpsEnabled: Boolean = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    val isShowsGpsDialog = remember { mutableStateOf(false) }
-
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted: Boolean ->
             if (isGranted) viewModel.fetchUserLocation()
-            else Log.e("MapScreen", "Location permission denied")
         }
     )
 
     LaunchedEffect(Unit) {
-        if (!isGpsEnabled) isShowsGpsDialog.value = true
-        if (!hasLocationPermission) requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        isGpsEnabled.value = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (!isGpsEnabled.value) isShowsGpsDialog.value = true
+        if (!PermissionManager.hasLocationPermission(context)) {
+            PermissionManager.requestLocationPermission(
+                launcher = requestPermissionLauncher
+            )
+        }
     }
 
     if (message.isNotEmpty()) {
