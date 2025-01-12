@@ -1,13 +1,11 @@
 package com.gdgevents.gdgeventsapp.features.map.presentaion
 
-import android.content.Context
+import android.location.Address
 import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gdgevents.gdgeventsapp.R
-import com.gdgevents.gdgeventsapp.features.map.data.db.LocationDao
-import com.gdgevents.gdgeventsapp.features.map.data.db.LocationEntity
+import com.gdgevents.gdgeventsapp.core.datastore.domain.UserPreferencesRepo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,9 +15,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Locale
 import javax.inject.Inject
 
 private const val TAG = "MapViewModel"
@@ -27,7 +24,8 @@ private const val TAG = "MapViewModel"
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
-    private val locationDao: LocationDao
+    private val geocoder: Geocoder,
+    private val userPrefRepo: UserPreferencesRepo
 ) : ViewModel() {
     private val _state = MutableStateFlow(MapUiState())
     val state: StateFlow<MapUiState> = _state
@@ -35,97 +33,51 @@ class MapViewModel @Inject constructor(
     private val _message = MutableSharedFlow<String>()
     val message: SharedFlow<String> = _message
 
-    private val _userLocation = MutableStateFlow<LatLng?>(null)
+    init {
+        getRegionFromLocation(_state.value.marker!!)
+        fetchUserLocation()
+    }
 
-    private val _isDeleting = MutableStateFlow(false)
-
-    fun fetchUserLocation(context: Context) {
-        Log.i(TAG, "fetchUserLocation")
+    fun fetchUserLocation() {
         try {
             fusedLocationProviderClient.lastLocation
                 .addOnSuccessListener { location ->
                     location?.let {
-                        Log.i(TAG, "location is $it")
                         val userLatLng = LatLng(it.latitude, it.longitude)
-                        _userLocation.value = userLatLng
-                        viewModelScope.launch {
-                            _state.emit(
-                                _state.value.copy(
-                                    marker = userLatLng
-                                )
-                            )
-                            getGovernorateFromLocation(context, userLatLng)
-//                            locationDao.insertLocation(
-//                                LocationEntity(
-//                                    latitude = it.latitude,
-//                                    longitude = it.longitude,
-//                                    governorate = governorate
-//                                )
-//                            )
-                        }
-                    } ?: CoroutineScope(Dispatchers.Main).launch {
-                        _message.emit(context.getString(R.string.error_location_null))
+                        addMarker(userLatLng)
                     }
                 }.addOnFailureListener { exception ->
                     Log.e(TAG, "exception")
-                    Log.e("MapViewModel", "Failed to fetch location: ${exception.message}")
+                    Log.e(TAG, "Failed to fetch location: ${exception.message}")
                 }
         } catch (e: SecurityException) {
             Log.e("MapViewModel", "SecurityException: ${e.message}")
         }
     }
 
-    fun addMarker(latLng: LatLng, context: Context) {
-        viewModelScope.launch {
-            reverseGeocodeAsync(context, latLng) { address ->
-                val city = address ?: "Unknown Location"
-
-                launch {
-                    locationDao.insertLocation(
-                        LocationEntity(
-                            latitude = latLng.latitude,
-                            longitude = latLng.longitude,
-                            governorate = city
-                        )
-                    )
-                }
-            }
+    fun addMarker(latLng: LatLng) {
+        getRegionFromLocation(latLng = latLng)
+        CoroutineScope(Dispatchers.Main).launch {
+            _state.emit(_state.value.copy(marker = latLng))
         }
-        _state.value = _state.value.copy(
-            marker = latLng
-        )
     }
 
     // Method to save or update the location in the database
-    fun saveLocation(governorate: String = _state.value.locationText ?: "") {
+    fun saveLocation() {
         viewModelScope.launch {
-            _userLocation.value?.let {
-                val locationEntity = LocationEntity(
-                    latitude = it.latitude,
-                    longitude = it.longitude,
-                    governorate = governorate
+            val location = _state.value.marker
+            location?.let {
+                userPrefRepo.setLocation(
+                    lat = it.latitude,
+                    long = it.longitude,
+                    region = _state.value.regionName
                 )
-
-                val existingLocation = locationDao.getLocation()
-
-                if (existingLocation == null) locationDao.insertLocation(locationEntity)
-                else locationDao.updateLocation(locationEntity)
             }
         }
     }
 
-
-    fun deleteLocation() {
+    fun searchLocation(query: String, onResult: (LatLng?) -> Unit) {
         viewModelScope.launch {
-            _isDeleting.value = true
-            locationDao.deleteAllLocations()
-            _isDeleting.value = false
-        }
-    }
-
-    fun searchLocation(query: String, context: Context, onResult: (LatLng?) -> Unit) {
-        viewModelScope.launch {
-            val geocoder = Geocoder(context, Locale.getDefault())
             try {
                 val addressList = geocoder.getFromLocationName(query, 1)
                 if (!addressList.isNullOrEmpty()) {
@@ -142,26 +94,46 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun loadSavedLocation() {
-        viewModelScope.launch {
-            val location = locationDao.getLocation()
-            location?.let {
-                _state.value = _state.value.copy(marker = LatLng(it.latitude, it.longitude))
-//                _dynamicText.value = it.governorate
-            }
-        }
-    }
+    private fun getRegionFromLocation(
+        latLng: LatLng,
+    ) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            geocoder.getFromLocation(
+                latLng.latitude,
+                latLng.longitude,
+                1,
+                object : Geocoder.GeocodeListener {
+                    override fun onGeocode(addresses: MutableList<Address>) {
+                        if (addresses.isNotEmpty()) {
+                            val address = addresses[0]
 
-    private suspend fun getGovernorateFromLocation(context: Context, latLng: LatLng): String {
-        return withContext(Dispatchers.IO) {
-            val geocoder = Geocoder(context, Locale.getDefault())
-            val addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            if (addressList.isNullOrEmpty()) {
-                "Unknown Governorate"
-            } else {
-                val address = addressList[0]
-                _state.emit(_state.value.copy(locationText = "${address.adminArea}, ${address.countryName}"))
-                address.adminArea ?: "Unknown Governorate"
+                            val locality = address.adminArea ?: "Unknown Location"
+                            _state.update { it.copy(regionName = locality) }
+                        } else _state.update { it.copy(regionName = "Unknown Location") }
+                    }
+
+                    override fun onError(errorMessage: String?) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            _message.emit(errorMessage.toString())
+                        }
+                    }
+                }
+            )
+        } else {
+            try {
+                val addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                if (!addressList.isNullOrEmpty()) {
+                    val address = addressList[0]
+                    val locality = address.adminArea ?: "Unknown Location"
+                    _state.update { it.copy(regionName = locality) }
+                } else {
+                    _state.update { it.copy(regionName = "Unknown Location") }
+                }
+            } catch (e: Exception) {
+                Log.e("MapScreen", "Error fetching address: ${e.message}")
+                CoroutineScope(Dispatchers.Main).launch {
+                    _message.emit(e.message.toString())
+                }
             }
         }
     }

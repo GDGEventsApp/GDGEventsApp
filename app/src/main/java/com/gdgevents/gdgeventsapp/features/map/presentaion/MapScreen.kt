@@ -4,11 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -74,9 +73,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import java.util.Locale
-
-private const val TAG = "MapScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,6 +82,7 @@ fun MapScreen(
     val context = LocalContext.current
     val uiSettings = remember { MapUiSettings(zoomControlsEnabled = true) }
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val message by viewModel.message.collectAsStateWithLifecycle("")
     val searchQuery = remember { mutableStateOf("") }
 
     val hasLocationPermission = remember {
@@ -102,23 +99,19 @@ fun MapScreen(
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted: Boolean ->
-            if (isGranted) {
-                viewModel.fetchUserLocation(context)
-            } else {
-                Log.e("MapScreen", "Location permission denied")
-            }
+            if (isGranted) viewModel.fetchUserLocation()
+            else Log.e("MapScreen", "Location permission denied")
         }
     )
 
     LaunchedEffect(Unit) {
         if (!isGpsEnabled) isShowsGpsDialog.value = true
-        if (!hasLocationPermission) {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        } else {
-            viewModel.fetchUserLocation(context)
-        }
+        if (!hasLocationPermission) requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    if (message.isNotEmpty()) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -127,8 +120,8 @@ fun MapScreen(
 
         LaunchedEffect(state.marker) {
             state.marker?.let { marker ->
-                cameraPositionState.position =
-                    CameraPosition.fromLatLngZoom(LatLng(marker.latitude, marker.longitude), 15f)
+                val location = LatLng(marker.latitude, marker.longitude)
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(location, 15f)
             }
         }
 
@@ -213,7 +206,7 @@ fun MapScreen(
             uiSettings = uiSettings,
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
-                viewModel.addMarker(latLng, context)
+                viewModel.addMarker(latLng)
             }
         )
 
@@ -225,9 +218,11 @@ fun MapScreen(
                 .align(Alignment.TopCenter),
             searchQuery = searchQuery,
             onSearch = { query ->
-                viewModel.searchLocation(query, context) { latLng ->
+                viewModel.searchLocation(
+                    query = query
+                ) { latLng ->
                     latLng?.let {
-                        viewModel.addMarker(it, context)
+                        viewModel.addMarker(it)
                     } ?: Log.e("MapScreen", "Location not found for query: $query")
                 }
             }
@@ -235,7 +230,8 @@ fun MapScreen(
 
         BottomSheet(
             modifier = Modifier.align(Alignment.BottomCenter),
-            state = state,
+            marker = state.marker,
+            regionName = state.regionName,
             onConfirmClick = {
                 viewModel.saveLocation()
             })
@@ -245,7 +241,8 @@ fun MapScreen(
 @Composable
 fun BottomSheet(
     modifier: Modifier = Modifier,
-    state: MapUiState,
+    marker: LatLng?,
+    regionName: String,
     onConfirmClick: () -> Unit
 ) {
     Column(
@@ -261,16 +258,14 @@ fun BottomSheet(
             fontWeight = FontWeight.Bold
         )
 
-        if (state.marker == null) {
+        if (marker == null) {
             Text(
                 text = "Choose your location to start to find events around you",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(vertical = 10.dp)
             )
-        }
-
-        if (state.marker != null) {
+        } else {
             Row(
                 modifier = modifier
                     .clip(RoundedCornerShape(3.dp))
@@ -291,7 +286,7 @@ fun BottomSheet(
                 )
 
                 Text(
-                    text = state.locationText.toString(),
+                    text = regionName,
                     color = Color.Black,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = modifier.padding(start = 10.dp)
@@ -301,7 +296,7 @@ fun BottomSheet(
 
         Button(
             shape = RoundedCornerShape(6.dp),
-            enabled = state.marker != null,
+            enabled = marker != null,
             colors = ButtonDefaults.buttonColors(
                 disabledContainerColor = UnEnabledContainerColor,
                 containerColor = PrimaryLight
@@ -360,52 +355,6 @@ fun SearchBar(
             }
         )
     )
-}
-
-fun reverseGeocodeAsync(
-    context: Context,
-    latLng: LatLng,
-    callback: (String?) -> Unit
-) {
-    val geocoder = Geocoder(context, Locale.getDefault())
-
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-        geocoder.getFromLocation(
-            latLng.latitude,
-            latLng.longitude,
-            1,
-            object : Geocoder.GeocodeListener {
-                override fun onGeocode(addresses: MutableList<Address>) {
-                    if (addresses.isNotEmpty()) {
-                        val address = addresses[0]
-
-                        val locality = address.adminArea ?: address.adminArea ?: "Unknown Location"
-                        callback(locality)
-                    } else {
-                        callback("Unknown Location")
-                    }
-                }
-
-                override fun onError(errorMessage: String?) {
-                    callback("Error fetching location")
-                }
-            }
-        )
-    } else {
-        try {
-            val addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            if (!addressList.isNullOrEmpty()) {
-                val address = addressList[0]
-                val locality = address.adminArea ?: address.adminArea ?: "Unknown Location"
-                callback(locality)
-            } else {
-                callback("Unknown Location")
-            }
-        } catch (e: Exception) {
-            Log.e("MapScreen", "Error fetching address: ${e.message}")
-            callback("Error fetching location")
-        }
-    }
 }
 
 @Composable

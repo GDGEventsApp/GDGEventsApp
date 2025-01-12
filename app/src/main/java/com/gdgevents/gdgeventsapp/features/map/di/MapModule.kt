@@ -1,23 +1,24 @@
 package com.gdgevents.gdgeventsapp.features.map.di
 
-import android.app.Activity
-import com.gdgevents.gdgeventsapp.MainActivity
+import android.content.Context
+import android.location.Geocoder
 import com.gdgevents.gdgeventsapp.features.map.data.MapRepoImpl
 import com.gdgevents.gdgeventsapp.features.map.domain.MapRepo
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.FusedOrientationProviderClient
-import com.google.android.gms.location.LocationServices
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.Locale
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class MapModule {
-    @Binds
-    abstract fun bindsMapRepo(
-        mapRepoImpl: MapRepoImpl
-    ): MapRepo
+object MapModule {
+    @Provides
+    fun provideRepo(): MapRepo = MapRepoImpl()
+
+    @Provides
+    fun provideGeocoder(@ApplicationContext context: Context): Geocoder =
+        Geocoder(context, Locale.getDefault())
 }
