@@ -9,7 +9,6 @@ import android.location.Geocoder
 import android.location.LocationManager
 import android.provider.Settings
 import android.util.Log
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -43,7 +42,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +51,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,8 +59,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gdgevents.gdgeventsapp.R
-import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.gdgevents.gdgeventsapp.ui.theme.LocationDetailsBackground
 import com.gdgevents.gdgeventsapp.ui.theme.LocationIconBackground
 import com.gdgevents.gdgeventsapp.ui.theme.PrimaryLight
@@ -72,11 +69,14 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
+
+private const val TAG = "MapScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +85,7 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     val uiSettings = remember { MapUiSettings(zoomControlsEnabled = true) }
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val searchQuery = remember { mutableStateOf("") }
 
     val hasLocationPermission = remember {
@@ -124,6 +124,13 @@ fun MapScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         val cameraPositionState = rememberCameraPositionState()
+
+        LaunchedEffect(state.marker) {
+            state.marker?.let { marker ->
+                cameraPositionState.position =
+                    CameraPosition.fromLatLngZoom(LatLng(marker.latitude, marker.longitude), 15f)
+            }
+        }
 
         // GPS dialog
         if (isShowsGpsDialog.value) {
@@ -201,19 +208,9 @@ fun MapScreen(
             }
         }
 
-
-        LaunchedEffect(state.marker) {
-            state.marker?.let { marker ->
-                val savedLatLng = LatLng(marker.latitude, marker.longitude)
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(savedLatLng, 15f)
-            }
-        }
-
         MapContent(
-            state = state,
+            marker = state.marker,
             uiSettings = uiSettings,
-            hasLocationPermission = hasLocationPermission,
-            requestPermissionLauncher = requestPermissionLauncher,
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
                 viewModel.addMarker(latLng, context)
@@ -248,7 +245,7 @@ fun MapScreen(
 @Composable
 fun BottomSheet(
     modifier: Modifier = Modifier,
-    state: MapState,
+    state: MapUiState,
     onConfirmClick: () -> Unit
 ) {
     Column(
@@ -413,31 +410,23 @@ fun reverseGeocodeAsync(
 
 @Composable
 fun MapContent(
-    state: MapState,
+    marker: LatLng? = null,
     uiSettings: MapUiSettings,
-    hasLocationPermission: Boolean,
-    requestPermissionLauncher: ManagedActivityResultLauncher<String, Boolean>,
     cameraPositionState: CameraPositionState,
     onMapClick: (LatLng) -> Unit
 ) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        properties = state.properties,
+        properties = MapProperties(),
         uiSettings = uiSettings,
-        onMapClick = { latLng ->
-            if (!hasLocationPermission) {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            } else {
-                onMapClick(latLng)
-            }
-        },
+        onMapClick = onMapClick,
         cameraPositionState = cameraPositionState
     ) {
-        state.marker?.let { marker ->
+        marker?.let {
             Marker(
-                state = MarkerState(position = marker),
+                state = MarkerState(position = it),
                 title = "Your Location",
-                snippet = "Lat: ${marker.latitude}, Lng: ${marker.longitude}"
+                snippet = "Lat: ${it.latitude}, Lng: ${it.longitude}"
             )
         }
     }

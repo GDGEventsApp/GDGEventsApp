@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gdgevents.gdgeventsapp.R
-import com.gdgevents.gdgeventsapp.features.map.data.MapState
 import com.gdgevents.gdgeventsapp.features.map.data.db.LocationDao
 import com.gdgevents.gdgeventsapp.features.map.data.db.LocationEntity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,8 +29,8 @@ class MapViewModel @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val locationDao: LocationDao
 ) : ViewModel() {
-    private val _state = MutableStateFlow(MapState())
-    val state: StateFlow<MapState> = _state
+    private val _state = MutableStateFlow(MapUiState())
+    val state: StateFlow<MapUiState> = _state
 
     private val _message = MutableSharedFlow<String>()
     val message: SharedFlow<String> = _message
