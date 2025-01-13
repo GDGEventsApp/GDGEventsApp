@@ -6,6 +6,7 @@ import com.gdgevents.gdgeventsapp.features.onBoarding.domain.usecases.AppEntryUs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +24,7 @@ class OnBoardingViewModel @Inject constructor(
     private fun checkIfUserHasEntered() {
         viewModelScope.launch {
             appEntryUseCases.readAppEntry().collect { hasEntered ->
-                _hasEntered.value = hasEntered
+                _hasEntered.update { hasEntered }
             }
         }
     }

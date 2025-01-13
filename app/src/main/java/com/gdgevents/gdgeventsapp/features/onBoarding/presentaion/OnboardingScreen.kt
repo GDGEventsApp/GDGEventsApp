@@ -5,11 +5,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,20 +30,41 @@ import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.components.GetStartedScreen
 import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.components.OnboardingTextContainer
 import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.model.onBoardList
+import com.gdgevents.gdgeventsapp.features.onBoarding.util.WindowType
+import com.gdgevents.gdgeventsapp.features.onBoarding.util.rememberWindowSize
 import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import ir.kaaveh.sdpcompose.sdp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(
     modifier: Modifier = Modifier,
-    event:( OnBoardingEvent) -> Unit,
+    event: (OnBoardingEvent) -> Unit,
     onItemClicked: () -> Unit,
-)
-{
-    val pagerState = rememberPagerState(pageCount = { onBoardList.size+1 })
+) {
+    val pagerState = rememberPagerState(pageCount = { onBoardList.size + 1 }, initialPage = 0)
     val scope = rememberCoroutineScope()
+    val windowSize = rememberWindowSize()
+    when (windowSize.width) {
+        // smaller than 600dp
+        WindowType.SMALL -> SmallScreen(modifier, pagerState, event, onItemClicked, scope)
+        // smaller than 840dp
+        WindowType.MEDIUM -> MediumScreen(modifier, pagerState, event, onItemClicked, scope)
+        // bigger than 840dp
+        WindowType.LARGE -> MediumScreen(modifier, pagerState, event, onItemClicked, scope)
+    }
 
+}
+
+@Composable
+private fun SmallScreen(
+    modifier: Modifier,
+    pagerState: PagerState,
+    event: (OnBoardingEvent) -> Unit,
+    onItemClicked: () -> Unit,
+    scope: CoroutineScope
+) {
     Box(modifier = modifier.fillMaxSize())
     {
         HorizontalPager(
@@ -71,25 +95,25 @@ fun OnboardingScreen(
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 OnboardingTextContainer(
-                    modifier=
-                    if(pagerState.currentPage== onBoardList.lastIndex)
-                                Modifier.alpha(alpha = 1-pagerState.currentPageOffsetFraction)
+                    modifier =
+                    if (pagerState.currentPage == onBoardList.lastIndex)
+                        Modifier.alpha(alpha = 1 - pagerState.currentPageOffsetFraction)
                     else Modifier,
                     title = stringResource(onBoardList[pagerState.currentPage].title),
                     description = stringResource(onBoardList[pagerState.currentPage].description),
                     currentPage = onBoardList[pagerState.currentPage].id,
                     totalPages = pagerState.pageCount,
                     onNextClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
                     },
                 )
             }
         }
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.TopEnd),
-            visible = pagerState.currentPage< onBoardList.size
+            visible = pagerState.currentPage < onBoardList.size
         ) {
             Text(
                 text = stringResource(R.string.skip),
@@ -106,34 +130,104 @@ fun OnboardingScreen(
     }
 }
 
+@Composable
+private fun MediumScreen(
+    modifier: Modifier,
+    pagerState: PagerState,
+    event: (OnBoardingEvent) -> Unit,
+    onItemClicked: () -> Unit,
+    scope: CoroutineScope
+) {
+    Box(modifier = modifier.fillMaxSize()) {
 
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_3A
-)
+        Box(
+            modifier = modifier.fillMaxSize()
+        )
+        {
+            HorizontalPager(
+                state = pagerState,
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_6
-)
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_3A
-)
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_2
-)
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.PIXEL_3A
-)
+                ) { index ->
+                if (index < onBoardList.size) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Image(
+                            painter = painterResource(id = onBoardList[index].imageRes),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f)
+                                .padding(16.sdp),
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+
+
+                } else {
+                    GetStartedScreen(
+                        onClick = {
+                            event(OnBoardingEvent.SaveAppEntry)
+                            onItemClicked()
+                        })
+                }
+
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                if (pagerState.currentPage < onBoardList.size) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        OnboardingTextContainer(
+                            modifier =
+                            if (pagerState.currentPage == onBoardList.lastIndex)
+                                Modifier.alpha(alpha = 1 - pagerState.currentPageOffsetFraction)
+                            else Modifier,
+                            title = stringResource(onBoardList[pagerState.currentPage].title),
+                            description = stringResource(onBoardList[pagerState.currentPage].description),
+                            currentPage = onBoardList[pagerState.currentPage].id,
+                            totalPages = pagerState.pageCount,
+                            onNextClick = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+
+
+        }
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.TopEnd),
+            visible = pagerState.currentPage < onBoardList.size
+        ) {
+            Text(
+                text = stringResource(R.string.skip),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .padding(top = 45.dp, end = 24.dp)
+                    .clickable {
+                        event(OnBoardingEvent.SaveAppEntry)
+                        onItemClicked()
+                    },
+            )
+        }
+    }
+
+}
+
+
+@Preview(showBackground = true, device = Devices.PIXEL_TABLET)
 @Composable
 private fun OnBoardModelPrev1() {
     GDGEventsAppTheme {
