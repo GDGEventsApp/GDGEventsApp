@@ -42,10 +42,9 @@ fun GetStartedScreen(
     when (windowSize.width) {
         // smaller than 600dp
         WindowType.SMALL -> SmallScreen(modifier, onClick)
-        // smaller than 840dp
-        WindowType.MEDIUM -> MediumScreen(modifier, onClick)
-        // bigger than 840dp
-        WindowType.LARGE -> MediumScreen(modifier, onClick)
+        // smaller than 840dp & bigger than 840dp
+        WindowType.MEDIUM, WindowType.LARGE -> MediumScreen(modifier, onClick)
+
     }
 
 }
