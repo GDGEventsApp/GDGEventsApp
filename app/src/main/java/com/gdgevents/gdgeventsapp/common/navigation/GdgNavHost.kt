@@ -1,5 +1,6 @@
 package com.gdgevents.gdgeventsapp.common.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,14 +19,15 @@ fun GdgNavHost(
 ) {
     val viewModel : OnBoardingViewModel = hiltViewModel()
     val hasEntered = viewModel.hasEntered.collectAsState(initial = false)
+    Log.d("GdgNavHost", "Start Destination: ${if (hasEntered.value) "Map" else "Onboarding"}")
     NavHost(
         navController = navController,
         startDestination = if(hasEntered.value) Destination.Map.route else Destination.OnBoarding.route,
         ){
         composable(route=Destination.OnBoarding.route) {
             OnboardingScreen(
-                event = viewModel::onEvent,
                 onItemClicked = {
+                    Log.d("GdgNavHost", "Onboarding completed, navigating to MapScreen")
                     viewModel.onEvent(OnBoardingEvent.SaveAppEntry)
                     navController.navigate(Destination.Map.route){
                         popUpTo(Destination.OnBoarding.route){
@@ -35,8 +37,9 @@ fun GdgNavHost(
                 }
             )
              }
-
-        composable(route=Destination.Map.route) { MapScreen()  }
+        composable(route = Destination.Map.route) {
+            MapScreen()
+        }
 
     }
 

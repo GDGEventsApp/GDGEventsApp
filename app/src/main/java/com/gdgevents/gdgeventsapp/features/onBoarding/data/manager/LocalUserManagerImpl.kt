@@ -1,27 +1,34 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.data.manager
 
-import android.content.Context
+import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
 import com.gdgevents.gdgeventsapp.features.onBoarding.domain.manager.LocalUserManager
 import com.gdgevents.gdgeventsapp.features.onBoarding.util.Constants
-import com.gdgevents.gdgeventsapp.features.onBoarding.util.Constants.USER_SETTINGS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class LocalUserManagerImpl(
-    private val context: Context
+class LocalUserManagerImpl @Inject constructor(
+    private val dataStore: DataStore<Preferences>,
 ): LocalUserManager {
-    private val Context.dataStore by preferencesDataStore(USER_SETTINGS)
     override suspend fun saveAppEntry() {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.APP_ENTRY] = true
+        try {
+            dataStore.edit { settings ->
+                settings[PreferencesKeys.APP_ENTRY] = true
+                Log.d("LocalUserManagerImpl", "APP_ENTRY saved successfully")
+            }
+        } catch (e: Exception) {
+            Log.e("LocalUserManagerImpl", "Failed to save APP_ENTRY", e)
         }
     }
     override fun readAppEntry(): Flow<Boolean> {
-        return context.dataStore.data.map { preferences ->
-            preferences[PreferencesKeys.APP_ENTRY] ?: false
+        return dataStore.data.map { preferences ->
+            val value = preferences[PreferencesKeys.APP_ENTRY] ?: false
+            Log.d("LocalUserManagerImpl", "Read APP_ENTRY = $value from DataStore")
+            value
         }
     }
     private object PreferencesKeys {

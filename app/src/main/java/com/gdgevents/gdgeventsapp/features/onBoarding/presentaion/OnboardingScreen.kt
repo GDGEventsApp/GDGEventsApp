@@ -1,5 +1,6 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.presentaion
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,17 +42,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun OnboardingScreen(
     modifier: Modifier = Modifier,
-    event: (OnBoardingEvent) -> Unit,
     onItemClicked: () -> Unit,
 ) {
+    Log.d("OnboardingScreen", "OnboardingScreen started")
     val pagerState = rememberPagerState(pageCount = { onBoardList.size + 1 }, initialPage = 0)
     val scope = rememberCoroutineScope()
     val windowSize = rememberWindowSize()
+    LaunchedEffect(pagerState.currentPage) {
+        Log.d("OnboardingScreen", "Current Page: ${pagerState.currentPage}")
+    }
     when (windowSize.width) {
         // smaller than 600dp
-        WindowType.SMALL -> SmallScreen(modifier, pagerState, event, onItemClicked, scope)
+        WindowType.SMALL -> SmallScreen(modifier, pagerState, onItemClicked, scope)
         // smaller than 840dp & bigger than 840dp
-        WindowType.MEDIUM, WindowType.LARGE -> MediumScreen(modifier, pagerState, event, onItemClicked, scope)
+        WindowType.MEDIUM, WindowType.LARGE -> MediumScreen(modifier, pagerState, onItemClicked, scope)
     }
 
 }
@@ -59,7 +64,6 @@ fun OnboardingScreen(
 private fun SmallScreen(
     modifier: Modifier,
     pagerState: PagerState,
-    event: (OnBoardingEvent) -> Unit,
     onItemClicked: () -> Unit,
     scope: CoroutineScope
 ) {
@@ -82,7 +86,6 @@ private fun SmallScreen(
 
             } else {
                 GetStartedScreen(onClick = {
-                    event(OnBoardingEvent.SaveAppEntry)
                     onItemClicked()
                 })
             }
@@ -119,7 +122,6 @@ private fun SmallScreen(
                 modifier = Modifier
                     .padding(top = 45.dp, end = 24.dp)
                     .clickable {
-                        event(OnBoardingEvent.SaveAppEntry)
                         onItemClicked()
                     }
             )
@@ -132,7 +134,6 @@ private fun SmallScreen(
 private fun MediumScreen(
     modifier: Modifier,
     pagerState: PagerState,
-    event: (OnBoardingEvent) -> Unit,
     onItemClicked: () -> Unit,
     scope: CoroutineScope
 ) {
@@ -167,7 +168,6 @@ private fun MediumScreen(
                 } else {
                     GetStartedScreen(
                         onClick = {
-                            event(OnBoardingEvent.SaveAppEntry)
                             onItemClicked()
                         })
                 }
@@ -215,7 +215,6 @@ private fun MediumScreen(
                 modifier = Modifier
                     .padding(top = 45.dp, end = 24.dp)
                     .clickable {
-                        event(OnBoardingEvent.SaveAppEntry)
                         onItemClicked()
                     },
             )
@@ -230,7 +229,6 @@ private fun MediumScreen(
 private fun OnBoardModelPrev1() {
     GDGEventsAppTheme {
         OnboardingScreen(
-            event = {},
             onItemClicked = {}
         )
     }

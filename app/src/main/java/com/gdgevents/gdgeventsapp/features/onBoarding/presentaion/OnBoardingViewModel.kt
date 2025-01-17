@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gdgevents.gdgeventsapp.features.onBoarding.domain.usecases.AppEntryUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -37,7 +38,7 @@ class OnBoardingViewModel @Inject constructor(
     }
 
     private fun saveAppEntry() {
-        viewModelScope.launch {
+        viewModelScope.launch(IO) {
             appEntryUseCases.saveAppEntry()
         }
     }
