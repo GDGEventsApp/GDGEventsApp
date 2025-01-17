@@ -11,7 +11,7 @@ class UserPreferencesRepoImpl @Inject constructor(private val localDataSource: D
     override suspend fun setLocation(lat: Double, long: Double, region: String) {
         val location =
             Location.newBuilder().setLatitude(lat).setLongitude(long).setRegion(region).build()
-        localDataSource.updateData { UserPreferences.newBuilder().setLocation(location).build() }
+        localDataSource.updateData { it.copy { this.location = location } }
     }
 
     override suspend fun getLocation(): Location = localDataSource.data.first().location

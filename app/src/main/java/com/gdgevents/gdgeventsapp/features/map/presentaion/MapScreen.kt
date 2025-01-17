@@ -10,7 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -140,73 +139,52 @@ fun MapScreen(
             BasicAlertDialog(onDismissRequest = {
                 isShowsGpsDialog.value = false
             }) {
-                Box(
-                    contentAlignment = Alignment.Center,
+                Column(
                     modifier = Modifier
-                        .widthIn(
-                            min = 70.dp,
-                            max = 110.dp
-                        )
-
+                        .clip(RoundedCornerShape(10.dp))
+                        .widthIn(min = 70.dp, max = 170.dp)
+                        .background(color = Color.White)
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
+                    Text(
+                        stringResource(R.string.disables_gps_dialog_title),
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                    Text(
+                        stringResource(R.string.disabled_gps_dialog_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                    )
+
+                    Button(
+                        shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(color = Color.White)
-                            .padding(10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            stringResource(R.string.disables_gps_dialog_title),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(10.dp)
-                        )
-                        Text(
-                            stringResource(R.string.disabled_gps_dialog_description),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                        )
-
-                        Button(
-                            shape = RoundedCornerShape(5.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 3.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryLight
-                            ),
-                            onClick = {
-                                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                            }) {
-                            Text(stringResource(R.string.ok))
-                        }
-
-                        Button(
-                            shape = RoundedCornerShape(5.dp),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = LocationDetailsBackground),
-                            onClick = {
-                                isShowsGpsDialog.value = false
-                            }) {
-                            Text(stringResource(R.string.cancel), color = Color.Black)
-                        }
+                            .fillMaxWidth()
+                            .padding(vertical = 3.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryLight
+                        ),
+                        onClick = {
+                            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                        }) {
+                        Text(stringResource(R.string.ok))
                     }
 
-                    Image(
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = null,
+                    Button(
+                        shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(10.dp)
-                            .clickable {
-                                isShowsGpsDialog.value = false
-                            }
-                    )
+                            .fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = LocationDetailsBackground),
+                        onClick = {
+                            isShowsGpsDialog.value = false
+                        }) {
+                        Text(stringResource(R.string.cancel), color = Color.Black)
+                    }
                 }
             }
         }
@@ -263,14 +241,14 @@ fun BottomSheet(
             .padding(bottom = 50.dp)
     ) {
         Text(
-            text = "Enter your location",
+            text = stringResource(R.string.enter_your_location),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
 
         if (marker == null) {
             Text(
-                text = "Choose your location to start to find events around you",
+                text = stringResource(R.string.choose_your_location_to_start_to_find_events_around_you),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(vertical = 10.dp)
@@ -384,7 +362,7 @@ fun MapContent(
         marker?.let {
             Marker(
                 state = MarkerState(position = it),
-                title = "Your Location",
+                title = stringResource(R.string.user_location),
                 snippet = "Lat: ${it.latitude}, Lng: ${it.longitude}"
             )
         }

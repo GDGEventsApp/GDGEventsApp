@@ -7,4 +7,7 @@
     <string name="error_location_null">failed to get Location</string>
     <string name="search_hint">Search your location</string>
     <string name="confirm">Confirm</string>
+    <string name="enter_your_location">Enter your location</string>
+    <string name="choose_your_location_to_start_to_find_events_around_you">Choose your location to start to find events around you</string>
+    <string name="user_location">Your Location</string>
 </resources>
