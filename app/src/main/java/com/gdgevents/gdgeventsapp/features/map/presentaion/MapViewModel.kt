@@ -39,26 +39,28 @@ class MapViewModel @Inject constructor(
     }
 
     fun fetchUserLocation() {
-        try {
-            fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener { location ->
-                    location?.let {
-                        val userLatLng = LatLng(it.latitude, it.longitude)
-                        addMarker(userLatLng)
+        viewModelScope.launch {
+            try {
+                fusedLocationProviderClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        location?.let {
+                            val userLatLng = LatLng(it.latitude, it.longitude)
+                            addMarker(userLatLng)
+                        }
+                    }.addOnFailureListener { exception ->
+                        Log.e(TAG, "exception")
+                        Log.e(TAG, "Failed to fetch location: ${exception.message}")
                     }
-                }.addOnFailureListener { exception ->
-                    Log.e(TAG, "exception")
-                    Log.e(TAG, "Failed to fetch location: ${exception.message}")
-                }
-        } catch (e: SecurityException) {
-            Log.e("MapViewModel", "SecurityException: ${e.message}")
+            } catch (e: SecurityException) {
+                Log.e("MapViewModel", "SecurityException: ${e.message}")
+            }
         }
     }
 
     fun addMarker(latLng: LatLng) {
-        getRegionFromLocation(latLng = latLng)
-        CoroutineScope(Dispatchers.Main).launch {
-            _state.emit(_state.value.copy(marker = latLng))
+        viewModelScope.launch {
+            getRegionFromLocation(latLng = latLng)
+            _state.update { it.copy(marker = latLng) }
         }
     }
 
@@ -97,42 +99,39 @@ class MapViewModel @Inject constructor(
     private fun getRegionFromLocation(
         latLng: LatLng,
     ) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocation(
-                latLng.latitude,
-                latLng.longitude,
-                1,
-                object : Geocoder.GeocodeListener {
-                    override fun onGeocode(addresses: MutableList<Address>) {
-                        if (addresses.isNotEmpty()) {
-                            val address = addresses[0]
+        viewModelScope.launch {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocation(
+                    latLng.latitude,
+                    latLng.longitude,
+                    1,
+                    object : Geocoder.GeocodeListener {
+                        override fun onGeocode(addresses: MutableList<Address>) {
+                            if (addresses.isNotEmpty()) {
+                                val address = addresses[0]
 
-                            val locality = address.adminArea ?: "Unknown Location"
-                            _state.update { it.copy(regionName = locality) }
-                        } else _state.update { it.copy(regionName = "Unknown Location") }
-                    }
+                                val locality = address.adminArea ?: "Unknown Location"
+                                _state.update { it.copy(regionName = locality) }
+                            } else _state.update { it.copy(regionName = "Unknown Location") }
+                        }
 
-                    override fun onError(errorMessage: String?) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            _message.emit(errorMessage.toString())
+                        override fun onError(errorMessage: String?) {
+                            _message.tryEmit(errorMessage.toString())
                         }
                     }
-                }
-            )
-        } else {
-            try {
-                val addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                if (!addressList.isNullOrEmpty()) {
-                    val address = addressList[0]
-                    val locality = address.adminArea ?: "Unknown Location"
-                    _state.update { it.copy(regionName = locality) }
-                } else {
-                    _state.update { it.copy(regionName = "Unknown Location") }
-                }
-            } catch (e: Exception) {
-                Log.e("MapScreen", "Error fetching address: ${e.message}")
-                CoroutineScope(Dispatchers.Main).launch {
-                    _message.emit(e.message.toString())
+                )
+            } else {
+                try {
+                    val addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                    if (!addressList.isNullOrEmpty()) {
+                        val address = addressList[0]
+                        val locality = address.adminArea ?: "Unknown Location"
+                        _state.update { it.copy(regionName = locality) }
+                    } else {
+                        _state.update { it.copy(regionName = "Unknown Location") }
+                    }
+                } catch (e: Exception) {
+                    _message.tryEmit(e.message.toString())
                 }
             }
         }

@@ -62,6 +62,7 @@ import com.gdgevents.gdgeventsapp.ui.theme.LocationDetailsBackground
 import com.gdgevents.gdgeventsapp.ui.theme.LocationIconBackground
 import com.gdgevents.gdgeventsapp.ui.theme.PrimaryLight
 import com.gdgevents.gdgeventsapp.ui.theme.UnEnabledContainerColor
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -71,6 +72,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,19 +105,33 @@ fun MapScreen(
         }
     }
 
-    if (message.isNotEmpty()) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(message) {
+        if (message.isNotEmpty()) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        val cameraPositionState = rememberCameraPositionState()
+        val cameraPositionState = rememberCameraPositionState(
+            init = {
+                state.marker?.let { marker ->
+                    this.position = CameraPosition.fromLatLngZoom(
+                        LatLng(marker.latitude, marker.longitude),
+                        10f
+                    )
+                }
+            }
+        )
 
         LaunchedEffect(state.marker) {
+            delay(50)
             state.marker?.let { marker ->
                 val location = LatLng(marker.latitude, marker.longitude)
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(location, 15f)
+                cameraPositionState.animate(
+                    update = CameraUpdateFactory.newLatLng(location)
+                )
             }
         }
 
