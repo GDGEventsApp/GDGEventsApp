@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">GDGEventsApp</string>
+    <string name="home_label">Home</string>
+    <string name="my_agenda_label">My agenda</string>
+    <string name="favorite_label">Favorite</string>
+    <string name="settings_label">Settings</string>
     <string name="see_all">see all</string>
 </resources>

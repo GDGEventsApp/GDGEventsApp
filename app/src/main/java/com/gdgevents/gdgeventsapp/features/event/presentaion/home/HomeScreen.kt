@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.gdgevents.gdgeventsapp.GdgAppState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gdgevents.gdgeventsapp.features.event.presentaion.home.components.EventsRow
@@ -20,6 +21,7 @@ import com.gdgevents.gdgeventsapp.features.event.presentaion.home.components.Tit
 
 @Composable
 fun HomeScreen(
+    appState: GdgAppState,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val events by viewModel.eventList.collectAsStateWithLifecycle()
