@@ -98,6 +98,7 @@ dependencies {
 
     // datastore - make type safe local storage
     implementation(libs.androidx.datastore)
+    implementation (libs.androidx.datastore.preferences)
     // protobuf - serialize Kotlin objects <-> protobuf schema
     implementation(libs.protobuf.kotlin.lite)
 
@@ -130,6 +131,9 @@ dependencies {
 
     // splash screen - backwards compatibility
     implementation(libs.androidx.core.splashscreen)
+
+    //different screen dimensions
+    implementation (libs.sdp.compose)
 }
 
 // protobuf plugin
