@@ -18,7 +18,6 @@ class LocalUserManagerImpl @Inject constructor(
         try {
             dataStore.edit { settings ->
                 settings[PreferencesKeys.APP_ENTRY] = true
-                Log.d("LocalUserManagerImpl", "APP_ENTRY saved successfully")
             }
         } catch (e: Exception) {
             Log.e("LocalUserManagerImpl", "Failed to save APP_ENTRY", e)
@@ -27,7 +26,6 @@ class LocalUserManagerImpl @Inject constructor(
     override fun readAppEntry(): Flow<Boolean> {
         return dataStore.data.map { preferences ->
             val value = preferences[PreferencesKeys.APP_ENTRY] ?: false
-            Log.d("LocalUserManagerImpl", "Read APP_ENTRY = $value from DataStore")
             value
         }
     }

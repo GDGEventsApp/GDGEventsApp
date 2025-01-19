@@ -7,6 +7,6 @@ import com.gdgevents.gdgeventsapp.common.navigation.MainRoute.OnboardingRoute
 
 fun NavGraphBuilder.onboardingRoute(appState: GdgAppState) {
     composable<OnboardingRoute> {
-        OnBoardingScreen(appState = appState)
+        OnboardingScreen(appState = appState)
     }
 }

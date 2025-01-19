@@ -1,6 +1,5 @@
 package com.gdgevents.gdgeventsapp.features.onBoarding.presentaion
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,23 +17,21 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.gdgevents.gdgeventsapp.GdgAppState
 import com.gdgevents.gdgeventsapp.R
 import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.components.GetStartedScreen
 import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.components.OnboardingTextContainer
 import com.gdgevents.gdgeventsapp.features.onBoarding.presentaion.model.onBoardList
 import com.gdgevents.gdgeventsapp.features.onBoarding.util.WindowType
 import com.gdgevents.gdgeventsapp.features.onBoarding.util.rememberWindowSize
-import com.gdgevents.gdgeventsapp.ui.theme.GDGEventsAppTheme
 import ir.kaaveh.sdpcompose.sdp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -42,15 +39,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun OnboardingScreen(
     modifier: Modifier = Modifier,
-    onItemClicked: () -> Unit,
+    appState : GdgAppState,
+    viewModel: OnBoardingViewModel = hiltViewModel(),
+    onItemClicked: () -> Unit = {
+        appState.goToMapScreen()
+        viewModel.onEvent(OnBoardingEvent.SaveAppEntry)
+                                },
 ) {
-    Log.d("OnboardingScreen", "OnboardingScreen started")
     val pagerState = rememberPagerState(pageCount = { onBoardList.size + 1 }, initialPage = 0)
     val scope = rememberCoroutineScope()
     val windowSize = rememberWindowSize()
-    LaunchedEffect(pagerState.currentPage) {
-        Log.d("OnboardingScreen", "Current Page: ${pagerState.currentPage}")
-    }
     when (windowSize.width) {
         // smaller than 600dp
         WindowType.SMALL -> SmallScreen(modifier, pagerState, onItemClicked, scope)
@@ -219,18 +217,6 @@ private fun MediumScreen(
                     },
             )
         }
-    }
-
-}
-
-
-@Preview(showBackground = true, device = Devices.PIXEL_TABLET)
-@Composable
-private fun OnBoardModelPrev1() {
-    GDGEventsAppTheme {
-        OnboardingScreen(
-            onItemClicked = {}
-        )
     }
 
 }
