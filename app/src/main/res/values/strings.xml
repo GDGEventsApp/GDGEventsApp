@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">GDGEventsApp</string>
+    <string name="onboarding_title_1st_page">To Look Up More Events or Activities Nearby By Map</string>
+    <string name="onboarding_description_1st_page">" In publishing and graphic design, Lorem is a placeholder text commonly."</string>
+    <string name="onboarding_title_2nd_page">Explore More About Event Technologies</string>
+    <string name="onboarding_description_2nd_page">" In publishing and graphic design, Lorem is a placeholder text commonly"</string>
+    <string name="skip">Skip</string>
+    <string name="get_started">Get Started</string>
+    <string name="welcome_to">Welcome to \n</string>
+    <string name="gdg_events">"GDG Events "</string>
+    <string name="app">"app "</string>
+    <string name="discover_gdg_events_around_you">Discover GDG events around you</string>
+    <string name="next">Next</string>
     <string name="home_label">Home</string>
     <string name="my_agenda_label">My agenda</string>
     <string name="favorite_label">Favorite</string>
