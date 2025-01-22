@@ -72,10 +72,20 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.gdgevents.gdgeventsapp.GdgAppState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
+    appState: GdgAppState,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current

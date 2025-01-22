@@ -10,4 +10,9 @@
     <string name="enter_your_location">Enter your location</string>
     <string name="choose_your_location_to_start_to_find_events_around_you">Choose your location to start to find events around you</string>
     <string name="user_location">Your Location</string>
+    <string name="home_label">Home</string>
+    <string name="my_agenda_label">My agenda</string>
+    <string name="favorite_label">Favorite</string>
+    <string name="settings_label">Settings</string>
+    <string name="see_all">see all</string>
 </resources>
