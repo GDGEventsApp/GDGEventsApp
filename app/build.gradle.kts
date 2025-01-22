@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -28,8 +31,13 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "MAP_API_KEY", "\"AIzaSyCLzDsqjcZ6gcm7riPHj82vURPk23BQW-4\"")
-        manifestPlaceholders["MAP_API_KEY"] = "AIzaSyCLzDsqjcZ6gcm7riPHj82vURPk23BQW-4"
+        val localProperties = Properties()
+        localProperties.load(rootProject.file("local.properties").inputStream())
+
+        val mapKey = localProperties.getProperty("MAP_API_KEY")
+
+        buildConfigField("String", "MAP_API_KEY", "\"${mapKey}\"")
+        manifestPlaceholders["MAP_API_KEY"] = mapKey
     }
 
     buildTypes {
