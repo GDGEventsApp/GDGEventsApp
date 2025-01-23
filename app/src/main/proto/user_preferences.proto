@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_package = "com.gdgevents.gdgeventsapp.core.datastore.data";
+option java_multiple_files = true;
+
+message UserPreferences{
+  bool isDarkTheme = 1;
+  Location location = 2;
+}
+
+message Location{
+  double latitude = 1;
+  double longitude = 2;
+  string region = 3;
+}

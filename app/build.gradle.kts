@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -17,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gdgevents.gdgeventsapp"
-        minSdk = 24
+        minSdk = 25
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
         versionCode = 1
@@ -27,6 +30,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val localProperties = Properties()
+        localProperties.load(rootProject.file("local.properties").inputStream())
+
+        val mapKey = localProperties.getProperty("MAP_API_KEY")
+
+        buildConfigField("String", "MAP_API_KEY", "\"${mapKey}\"")
+        manifestPlaceholders["MAP_API_KEY"] = mapKey
     }
 
     buildTypes {
@@ -47,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -58,7 +70,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,6 +78,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -131,6 +143,10 @@ dependencies {
 
     // splash screen - backwards compatibility
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps.v1810)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     //different screen dimensions
     implementation (libs.sdp.compose)
