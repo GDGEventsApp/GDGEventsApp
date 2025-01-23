@@ -16,5 +16,4 @@ class UserPreferencesRepoImpl @Inject constructor(private val localDataSource: D
 
     override suspend fun getLocation(): Location = localDataSource.data.first().location
 
-
 }

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.2"
+datastorePreferences = "1.1.1"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -33,9 +34,11 @@ hiltAndroidx = "1.2.0"
 coreSplashscreen = "1.0.1"
 playServicesLocation = "21.3.0"
 datastorePreferencesCoreJvm = "1.1.1"
+sdpCompose = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -78,6 +81,7 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+sdp-compose = { module = "com.github.Kaaveh:sdp-compose", version.ref = "sdpCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
